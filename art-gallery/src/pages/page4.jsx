@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 
 const fadeIn = keyframes`
@@ -50,15 +51,6 @@ const NavLinks = styled.nav`
   }
 `;
 
-const Footer = styled.footer`
-  background: black;
-  color: white;
-  padding: 2rem;
-  text-align: center;
-  border-top: 1px solid white;
-  width: 100%;
-`;
-
 const ReviewsContainer = styled.div`
   flex: 1;
   display: flex;
@@ -69,6 +61,7 @@ const ReviewsContainer = styled.div`
   padding: 2rem;
   width: 100%;
   max-width: 1200px;
+  margin-bottom: 30px;
 `;
 
 const ReviewsGrid = styled.div`
@@ -117,9 +110,38 @@ const StarRating = styled.div`
   margin: 1rem 0;
 `;
 
+const Footer = styled.footer`
+  background: #111; /* Dark background for a sleek look */
+  color: #ccc; /* Slightly lighter text for readability */
+  text-align: center;
+  margin-top: 20px;
+  border-top: 1px solid #444; /* Subtle border for separation */
+  width: 100%;
+  font-size: 1rem;
+  position: relative;
+  bottom: 0;
+
+  a {
+    color: #ffd700; /* Gold color for links */
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 10px;
+    
+    &:hover {
+      text-decoration: underline;
+      color: white;
+    }
+  }
+
+  p {
+    margin: 0.5rem 0;
+  }
+`;
+
+
 const FeedbackForm = styled.form`
   max-width: 600px;
-  margin: 4rem auto;
+  margin: 2rem auto;
   padding: 2rem;
   background: #333;
   border-radius: 10px;
@@ -147,27 +169,33 @@ const FeedbackForm = styled.form`
 `;
 
 const initialReviews = [
-  { id: 1, name: 'Sarah J.', comment: 'Absolutely breathtaking collection! Every piece tells a unique story, and I found myself lost in the artistry and emotions behind them. A must-visit for art lovers!', rating: 5 },
-  { id: 2, name: 'Michael R.', comment: 'The curation is exceptional. Each section flows beautifully into the next, creating a seamless and immersive experience. The blend of contemporary and classic works is truly impressive.', rating: 4 },
-  { id: 3, name: 'Emma W.', comment: 'A truly immersive experience. The lighting, layout, and ambiance make it feel like you are stepping into another world. I could spend hours here just admiring the craftsmanship.', rating: 5 },
-  { id: 4, name: 'David K.', comment: 'Innovative and thought-provoking. The use of digital art alongside traditional paintings creates a fascinating contrast that challenges conventional perspectives.', rating: 4 },
-  { id: 5, name: 'Lily S.', comment: 'Will definitely visit again! The gallery is a treasure trove of creativity, and each visit brings new insights. The staff is also very knowledgeable and helpful.', rating: 5 },
+  { id: 1, name: 'Sarah J.', comment: 'Absolutely breathtaking collection!', rating: 5 },
+  { id: 2, name: 'Michael R.', comment: 'The curation is exceptional.', rating: 4 },
+  { id: 3, name: 'Emma W.', comment: 'A truly immersive experience.', rating: 5 },
+  { id: 4, name: 'David K.', comment: 'Innovative and thought-provoking.', rating: 4 },
+  { id: 5, name: 'Lily S.', comment: 'Will definitely visit again!', rating: 5 },
 ];
 
 const ReviewsPage = () => {
   const [reviews, setReviews] = useState(initialReviews);
-  const [formData, setFormData] = useState({ name: '', email: '', comment: '', rating: 0 });
+  const [formData, setFormData] = useState({ name: '', comment: '', rating: 0 });
+  const [showForm, setShowForm] = useState(false);
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  
+  // Placeholder authentication check
+  const isLoggedIn = false; // Change this to true when the user is authenticated
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newReview = {
-      id: reviews.length + 1,
-      name: formData.name,
-      comment: formData.comment,
-      rating: formData.rating
-    };
-    setReviews([...reviews, newReview]);
-    setFormData({ name: '', email: '', comment: '', rating: 0 });
+    if (!isLoggedIn) {
+      navigate('/login'); // Redirect to login page
+    } else {
+      setReviews([...reviews, { id: reviews.length + 1, name: formData.name, comment: formData.comment, rating: formData.rating }]);
+      setFormData({ name: '', comment: '', rating: 0 });
+      setMessage('Your review has been recorded. Thank you!');
+      setShowForm(false);
+    }
   };
 
   const renderStars = (rating) => {
@@ -208,27 +236,24 @@ const ReviewsPage = () => {
         </BottomReviews>
       </ReviewsContainer>
 
-      <FeedbackForm onSubmit={handleSubmit}>
-        <h2>Leave Your Feedback</h2>
-        <input 
-          type="text" 
-          placeholder="Your Name" 
-          value={formData.name}
-          onChange={(e) => setFormData({...formData, name: e.target.value})}
-          required
-        />
-        <textarea 
-          placeholder="Your Feedback" 
-          rows="4"
-          value={formData.comment}
-          onChange={(e) => setFormData({...formData, comment: e.target.value})}
-          required
-        />
-        <button type="submit">Submit Review</button>
-      </FeedbackForm>
+      {message && <p>{message}</p>}
+
+      {!showForm && <button onClick={() => setShowForm(true)}>Leave a Review</button>}
+
+      {showForm && (
+        <FeedbackForm onSubmit={handleSubmit}>
+          <h2>Leave Your Feedback</h2>
+          <input type="text" placeholder="Your Name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
+          <textarea placeholder="Your Feedback" rows="4" value={formData.comment} onChange={(e) => setFormData({...formData, comment: e.target.value})} required />
+          <button type="submit">Submit Review</button>
+        </FeedbackForm>
+      )}
 
       <Footer>
-        © 2025 Art Gallery. All rights reserved.
+        <p>© 2025 Art Gallery. All rights reserved.</p>
+        <p>
+          <a href="#privacy">Privacy Policy</a> | <a href="#terms">Terms of Use</a>
+        </p>
       </Footer>
     </PageContainer>
   );
