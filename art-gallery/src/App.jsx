@@ -22,19 +22,11 @@ function App() {
         <Page1 />
       </div>
       {/* Buttons to Scroll Between Sections */}
-      <nav style={{ 
-        position: 'fixed', 
-        top: '10px', 
-        right: '20px', 
-        zIndex: 1000, 
-        background: 'rgba(255, 255, 255, 0.8)', 
-        padding: '10px', 
-        borderRadius: '10px' 
-      }}>
+      <nav >
       <button onClick={() => scrollToSection(homeRef)}>Home</button>
       <button onClick={() => scrollToSection(galleryRef)}>Gallery</button>
-        <button onClick={() => scrollToSection(artSaleRef)}>Home</button>
-        <button onClick={() => scrollToSection(reviewsRef)}>Reviews</button>
+      <button onClick={() => scrollToSection(artSaleRef)}>Home</button>
+      <button onClick={() => scrollToSection(reviewsRef)}>Reviews</button>
       </nav>
 
       {/* Sections */}
