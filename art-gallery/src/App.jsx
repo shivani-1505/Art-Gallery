@@ -1,10 +1,40 @@
-import React from 'react';
-import './index.css'; // Ensure Tailwind is imported
+import React, { useRef } from 'react';
+import ArtSale from './pages/page3';
+import ArtGalleryPage from './pages/page2';
+import ReviewsPage from './pages/page4';
 
-export default function Home() {
+function App() {
+  const galleryRef = useRef(null);
+  const artSaleRef = useRef(null);
+  const reviewsRef = useRef(null);
+
+  const scrollToSection = (ref) => {
+    ref.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <div className="bg-black h-screen flex justify-center items-center text-white">
-      <h1 className="text-4xl">Tailwind Works!</h1>
+    <div>
+      {/* Buttons to Scroll Between Sections */}
+      <nav>
+      <button onClick={() => scrollToSection(galleryRef)}>Gallery</button>
+        <button onClick={() => scrollToSection(artSaleRef)}>Home</button>
+        <button onClick={() => scrollToSection(reviewsRef)}>Reviews</button>
+      </nav>
+
+      {/* Sections */}
+      <div ref={galleryRef}>
+        <ArtGalleryPage />
+      </div>
+
+      <div ref={artSaleRef}>
+        <ArtSale />
+      </div>
+
+      <div ref={reviewsRef}>
+        <ReviewsPage />
+      </div>
     </div>
   );
 }
+
+export default App;
