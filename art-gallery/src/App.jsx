@@ -4,11 +4,13 @@ import ArtGalleryPage from './pages/page2';
 import ReviewsPage from './pages/page4';
 import Page1 from './pages/page1';
 import FAQWebpage from './pages/page5'; // Import your new page
+import VirtualTour from './pages/page6';
 
 function App() {
   const homeRef = useRef(null);
   const galleryRef = useRef(null);
   const artSaleRef = useRef(null);
+  const virtualRef = useRef(null);
   const reviewsRef = useRef(null);
   const faqRef = useRef(null); // Create ref for FAQ page
 
@@ -27,6 +29,7 @@ function App() {
         <button onClick={() => scrollToSection(homeRef)}>Home</button>
         <button onClick={() => scrollToSection(galleryRef)}>Gallery</button>
         <button onClick={() => scrollToSection(artSaleRef)}>Art Sale</button>
+        <button onClick={() => scrollToSection(virtualRef)}>Virtual Tour</button>
         <button onClick={() => scrollToSection(reviewsRef)}>Reviews</button>
         <button onClick={() => scrollToSection(faqRef)}>FAQ</button> {/* Button to navigate to FAQ page */}
       </nav>
@@ -38,6 +41,10 @@ function App() {
 
       <div ref={artSaleRef}>
         <ArtSale />
+      </div>
+
+      <div ref={virtualRef}>
+        <VirtualTour />
       </div>
 
       <div ref={reviewsRef}>
