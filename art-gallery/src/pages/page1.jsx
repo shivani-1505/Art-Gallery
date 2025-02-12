@@ -18,18 +18,7 @@ const Page1 = () => {
         zIndex: 1000
       }}>
         {/* Left-aligned menu */}
-        <ul style={{ display: 'flex', gap: '20px', listStyle: 'none', margin: 0, padding: 0 }}>
-          {['Home', 'Gallery', 'Artwork', 'Reviews'].map((item) => (
-            <li key={item}>
-              <a href="#" style={{
-                textDecoration: 'none', color: '#000', fontWeight: 500, transition: '0.3s', cursor: 'pointer'
-              }}
-                onMouseOver={(e) => e.target.style.color = '#555'}
-                onMouseOut={(e) => e.target.style.color = '#000'}>{item}</a>
-            </li>
-          ))}
-        </ul>
-
+        
         {/* Centered Title */}
         <h1 style={{
           position: 'absolute',
