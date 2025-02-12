@@ -6,7 +6,7 @@ import { MdArrowForward } from "react-icons/md";
 
 // Sample images for each category
 const imageData = {
-  All: ["/images/art1.jpg", "/images/art2.jpg", "/images/art3.jpg"],
+  All: ["https://i.pinimg.com/474x/25/c9/3d/25c93dd41f16048a836d5837dae4e638.jpg", "https://i.pinimg.com/736x/a9/12/73/a91273677b2faec433397d6c1cdf3475.jpg", "https://i.pinimg.com/736x/79/c2/41/79c241ffee4456a2b8cc8515d4dc41df.jpg"],
   Renaissance: ["https://i.pinimg.com/736x/4c/ca/32/4cca324472f172eb397189cc667d3cde.jpg", "https://i.pinimg.com/736x/7f/29/9d/7f299d29c147e3aaf0362e9b9de2abff.jpg"],
   Abstract: ["https://i.pinimg.com/736x/6a/30/ad/6a30ad236772c6481c42bea92b6b20be.jpg", "https://ik.imagekit.io/theartling/prod/original_images/62.jpg?tr=w-950", "https://ik.imagekit.io/theartling/prod/original_images/chu_teh_chun.jpg?tr=w-950"],
   Animal: ["https://drawpaintacademy.com/wp-content/uploads/2022/07/Albrecht-Du%E2%95%A0erer-Young-Hare-1502.jpg", "https://drawpaintacademy.com/wp-content/uploads/2022/07/Frans-Snyders-Concert-of-Birds-1629-1630.jpg"],
