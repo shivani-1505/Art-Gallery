@@ -3,6 +3,7 @@ import ArtSale from './pages/page3';
 import ArtGalleryPage from './pages/page2';
 import ReviewsPage from './pages/page4';
 
+
 function App() {
   const galleryRef = useRef(null);
   const artSaleRef = useRef(null);
