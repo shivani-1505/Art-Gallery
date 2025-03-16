@@ -14,7 +14,7 @@ const imageData = {
   Modern: ["https://images.unsplash.com/photo-1558865869-c93f6f8482af?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bW9kZXJuJTIwYXJ0fGVufDB8fDB8fHww", "https://images.unsplash.com/photo-1583407723467-9b2d22504831?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bW9kZXJuJTIwYXJ0fGVufDB8fDB8fHww"],
 };
 
-export default function ArtSale() {
+export default function ArtSale({ onSeeMoreClick }) {
   const [selected, setSelected] = useState("Renaissance");
   const [imagesToShow, setImagesToShow] = useState(imageData[selected] || []);
   const [loading, setLoading] = useState(false);
@@ -32,21 +32,20 @@ export default function ArtSale() {
   return (
     <div className="bg-black h-screen w-screen flex flex-col justify-start items-center text-white m-0 p-0 gap-6">
       {/* Page Title */}
-<div className="text-4xl font-semibold mt-16 self-start ml-10">
-  Artwork For Sale
-</div>
-
+      <div className="text-4xl font-semibold mt-16 self-start ml-10">
+        Artwork For Sale
+      </div>
 
       {/* Horizontal Menu - Category Buttons */}
       <div className="flex space-x-4 text-sm mt-6">
         {categories.map((category) => (
           <button
-            key={category}
-            onClick={() => setSelected(category)}
-            className={`relative pb-1 transition-all border-none outline-none bg-transparent ${
-              selected === category ? "text-white font-semibold" : "text-gray-500 hover:text-gray-300"
-            }`}
-          >
+          key={category}
+          onClick={() => setSelected(category)}
+          className={`relative pb-1 transition-all border-none outline-none focus:outline-none bg-transparent whitespace-nowrap ${
+            selected === category ? "text-white font-semibold" : "text-gray-500 hover:text-gray-300"
+          }`}
+        >
             {category}
             {selected === category && (
               <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white"></span>
@@ -90,17 +89,17 @@ export default function ArtSale() {
         </AnimatePresence>
       </motion.div>
 
-      {/* "See More" Button Below Carousel */}
       <div className="mt-10">
-        <HoverBorderGradient 
-          containerClassName="rounded-3xl p-0.5"
-          className="text-xs font-semibold px-8 py-2 rounded-3xl flex justify-center items-center gap-2 w-auto"
-        >
-          <span>See More</span>
-          <MdArrowForward className="text-white text-lg" />
-        </HoverBorderGradient>
-      </div>
-
+  <button onClick={onSeeMoreClick} className="bg-transparent border-0 p-0 focus:outline-none">
+    <HoverBorderGradient 
+      containerClassName="rounded-3xl p-0.5"
+      className="text-xs font-semibold px-8 py-2 rounded-xl flex justify-center items-center gap-2 w-auto"
+    >
+      <span>See More</span>
+      <MdArrowForward className="text-white text-lg" />
+    </HoverBorderGradient>
+  </button>
+</div>
     </div>
   );
 }

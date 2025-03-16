@@ -1,44 +1,10 @@
+import React from 'react';
 import image2 from '../assets/image4.avif';
 
-const Page1 = () => {
+const Page1 = ({ onGalleryClick }) => {
+
   return (
     <div>
-      {/* Navigation Bar */}
-      <nav style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '20px 50px',
-        background: '#fff',
-        color: '#000',
-        position: 'fixed',
-        width: '100%',
-        top: 0,
-        left: 0,
-        zIndex: 1000
-      }}>
-        {/* Left-aligned menu */}
-        
-        {/* Centered Title */}
-        <h1 style={{
-          position: 'absolute',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          margin: 0,
-          fontSize: '1.8rem'
-        }}>ArtVista</h1>
-
-        {/* Right-aligned login/signup */}
-        <div style={{ display: 'flex', gap: '15px' }}>
-          {['Login', 'Sign Up'].map((item) => (
-            <a key={item} href="#" style={{
-              textDecoration: 'none', color: '#000', fontWeight: 500, transition: '0.3s', cursor: 'pointer'
-            }}
-              onMouseOver={(e) => e.target.style.color = '#555'}
-              onMouseOut={(e) => e.target.style.color = '#000'}>{item}</a>
-          ))}
-        </div>
-      </nav>
 
       {/* Hero Section */}
       <header 
@@ -54,7 +20,8 @@ const Page1 = () => {
           alignItems: 'center',
           justifyContent: 'center',
           color: '#fff',
-          textAlign: 'center'
+          textAlign: 'center',
+          marginTop: 0 // Ensure no extra space at top
         }}
       >
         {/* Dark Overlay */}
@@ -77,19 +44,21 @@ const Page1 = () => {
             Immerse yourself in the captivating stories behind each artwork, as our artists draw inspiration from cultures, nature, and everyday life.
           </p>
           <div style={{ marginTop: '15px' }}> {/* Moved button down */}
-            <button style={{
-              padding: '10px 25px',
-              fontSize: '1.0rem',
-              backgroundColor: 'white',
-              color: 'black',
-              border: 'black',
-              borderRadius: '21px',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              transition: '0.3s'
-            }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#ddd'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#fff'}>
+            <button 
+              style={{
+                padding: '10px 25px',
+                fontSize: '1.0rem',
+                backgroundColor: 'white',
+                color: 'black',
+                border: 'black',
+                borderRadius: '21px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                transition: '0.3s'
+              }}
+              onClick={onGalleryClick}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#ddd'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#fff'}>
               Visit Gallery
             </button>
           </div>

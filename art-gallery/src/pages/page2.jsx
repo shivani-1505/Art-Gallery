@@ -6,12 +6,12 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const images = [
-    "https://i.pinimg.com/736x/de/67/e7/de67e76f9daa97097eea8be559d7dff7.jpg",
-    "https://i.pinimg.com/736x/88/6c/2d/886c2dd9632df00ec675fdcf6d2fac92.jpg",
-    "https://i.pinimg.com/736x/45/3e/23/453e23dc47f1d7e8d63eaa433256538d.jpg",
-  ];
+  "https://i.pinimg.com/736x/de/67/e7/de67e76f9daa97097eea8be559d7dff7.jpg",
+  "https://i.pinimg.com/736x/88/6c/2d/886c2dd9632df00ec675fdcf6d2fac92.jpg",
+  "https://i.pinimg.com/736x/45/3e/23/453e23dc47f1d7e8d63eaa433256538d.jpg",
+];
 
-const ArtGalleryPage = () => {
+const ArtGalleryPage = ({ onArtistsDirectoryClick }) => {
   return (
     <div className="h-screen w-screen flex flex-col bg-gray-100 overflow-hidden">
       {/* Navigation Bar */}
@@ -19,7 +19,6 @@ const ArtGalleryPage = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-between items-center py-4">
             <div className="text-2xl font-bold text-gray-800">Art Gallery</div>
-            
           </div>
         </div>
       </nav>
@@ -32,7 +31,10 @@ const ArtGalleryPage = () => {
           <span className="inline-block px-3 py-1 rounded-full bg-gray-300 text-center text-gray-700 text-sm mb-4 w-32">
             New Art Work
           </span>
-          <h1 className="text-5xl font-bold mb-4 text-black">
+          <h1 
+            className="text-5xl font-bold mb-4 text-black cursor-pointer hover:text-gray-700 transition-colors"
+            onClick={onArtistsDirectoryClick}
+          >
             New Artworks
             <br />
             From Our Artist
@@ -61,7 +63,7 @@ const ArtGalleryPage = () => {
                 <div className="w-80 h-[90%] bg-gray-800 rounded-xl overflow-hidden shadow-s flex justify-center items-center mx-auto">
                   <img
                     src={image}
-                    alt={`Artwork ${index + 1}`} // Fixed template literal syntax
+                    alt={`Artwork ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
