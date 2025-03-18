@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { collection, addDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { db } from "../firebase/firebaseConfig"; // Import the Firestore db
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
@@ -124,7 +125,7 @@ const FeedbackForm = styled.form`
   border-radius: 10px;
   color: white;
 
-  input, textarea {
+  input, textarea, select {
     width: calc(100% - 2rem);
     padding: 0.8rem;
     margin: 0.5rem 0;
@@ -145,30 +146,101 @@ const FeedbackForm = styled.form`
   }
 `;
 
-const initialReviews = [
-  { id: 1, name: 'Sarah J.', comment: 'Absolutely breathtaking collection!', rating: 5 },
-  { id: 2, name: 'Michael R.', comment: 'The curation is exceptional.', rating: 4 },
-  { id: 3, name: 'Emma W.', comment: 'A truly immersive experience.', rating: 5 },
-];
+const MessageBox = styled.div`
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+  text-align: center;
+  background: ${props => props.error ? '#ff6b6b' : '#4caf50'};
+  color: white;
+  width: 80%;
+  max-width: 600px;
+`;
 
 const ReviewsPage = () => {
-  const [reviews, setReviews] = useState(initialReviews);
-  const [formData, setFormData] = useState({ name: '', comment: '', rating: 0 });
+  const [reviews, setReviews] = useState([]);
+  const [formData, setFormData] = useState({ name: '', feedback: '', stars: 5 });
   const [showForm, setShowForm] = useState(false);
   const [message, setMessage] = useState('');
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
   
-  const isLoggedIn = false; // Change this to true when the user is authenticated
+  // Fetch reviews from Firebase
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setLoading(true);
+        const reviewsQuery = query(
+          collection(db, "reviews"), 
+          orderBy("stars", "desc"),
+          limit(3)
+        );
+        
+        const querySnapshot = await getDocs(reviewsQuery);
+        const reviewsList = [];
+        
+        querySnapshot.forEach((doc) => {
+          reviewsList.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+        
+        setReviews(reviewsList);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+        setError("Could not load reviews. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleSubmit = (e) => {
+    fetchReviews();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isLoggedIn) {
-      navigate('/login');
-    } else {
-      setReviews([...reviews, { id: reviews.length + 1, name: formData.name, comment: formData.comment, rating: formData.rating }]);
-      setFormData({ name: '', comment: '', rating: 0 });
-      setMessage('Your review has been recorded. Thank you!');
+    
+    try {
+      setError('');
+      setMessage('');
+      
+      // Form validation
+      if (!formData.name.trim() || !formData.feedback.trim()) {
+        setError('Please fill in all fields');
+        return;
+      }
+      
+      // Add document to Firestore
+      const docRef = await addDoc(collection(db, "reviews"), {
+        name: formData.name,
+        feedback: formData.feedback,
+        stars: Number(formData.stars),
+        timestamp: new Date()
+      });
+      
+      console.log("Review added with ID: ", docRef.id);
+      
+      // Update local state with new review
+      const newReview = {
+        id: docRef.id,
+        name: formData.name,
+        feedback: formData.feedback,
+        stars: Number(formData.stars)
+      };
+      
+      // Update reviews array with new review and sort by stars
+      const updatedReviews = [...reviews, newReview]
+        .sort((a, b) => b.stars - a.stars)
+        .slice(0, 3);
+      
+      setReviews(updatedReviews);
+      setFormData({ name: '', feedback: '', stars: 5 });
+      setMessage('Your review has been submitted. Thank you!');
       setShowForm(false);
+    } catch (err) {
+      console.error("Error adding review: ", err);
+      setError('Failed to submit your review. Please try again.');
     }
   };
 
@@ -178,31 +250,66 @@ const ReviewsPage = () => {
     ));
   };
 
+  const handleStarsChange = (e) => {
+    setFormData({...formData, stars: parseInt(e.target.value)});
+  };
+
   return (
     <PageContainer>
       <ReviewsContainer>
-        <ReviewsGrid>
-          {reviews.map((review, i) => (
-            <ReviewBox key={review.id} delay={i}>
-              <p>{review.comment}</p>
-              <StarRating>{renderStars(review.rating)}</StarRating>
-              <h4>- {review.name}</h4>
-            </ReviewBox>
-          ))}
-        </ReviewsGrid>
+        {loading ? (
+          <p>Loading reviews...</p>
+        ) : (
+          <ReviewsGrid>
+            {reviews.length > 0 ? (
+              reviews.map((review, i) => (
+                <ReviewBox key={review.id} delay={i}>
+                  <p>{review.feedback}</p>
+                  <StarRating>{renderStars(review.stars)}</StarRating>
+                  <h4>- {review.name}</h4>
+                </ReviewBox>
+              ))
+            ) : (
+              <p>No reviews yet. Be the first to leave a review!</p>
+            )}
+          </ReviewsGrid>
+        )}
 
         <LeaveReviewButton onClick={() => setShowForm(true)}>
           Leave a Review
         </LeaveReviewButton>
       </ReviewsContainer>
 
-      {message && <p>{message}</p>}
+      {message && <MessageBox>{message}</MessageBox>}
+      {error && <MessageBox error>{error}</MessageBox>}
 
       {showForm && (
         <FeedbackForm onSubmit={handleSubmit}>
           <h2>Leave Your Feedback</h2>
-          <input type="text" placeholder="Your Name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
-          <textarea placeholder="Your Feedback" rows="4" value={formData.comment} onChange={(e) => setFormData({...formData, comment: e.target.value})} required />
+          <input 
+            type="text" 
+            placeholder="Your Name" 
+            value={formData.name} 
+            onChange={(e) => setFormData({...formData, name: e.target.value})} 
+            required 
+          />
+          <textarea 
+            placeholder="Your Feedback" 
+            rows="4" 
+            value={formData.feedback} 
+            onChange={(e) => setFormData({...formData, feedback: e.target.value})} 
+            required 
+          />
+          <select 
+            value={formData.stars} 
+            onChange={handleStarsChange}
+          >
+            <option value="5">5 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="2">2 Stars</option>
+            <option value="1">1 Star</option>
+          </select>
           <button type="submit">Submit Review</button>
         </FeedbackForm>
       )}

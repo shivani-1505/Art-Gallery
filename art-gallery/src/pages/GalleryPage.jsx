@@ -1,187 +1,60 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ArtworkDetailPage from "./ArtDetail"; // Import the new detail page component
-
-// Artwork data with categories and status information
-const artworkData = {
-  "Paintings": [
-    {
-      id: 1,
-      title: "Abstract Harmony",
-      artist: "Bonita Rizka",
-      image: "https://i.pinimg.com/474x/25/c9/3d/25c93dd41f16048a836d5837dae4e638.jpg",
-      available: true,
-      forSale: true,
-      price: "$850",
-      year: 2023,
-      description: "A collection of vibrant abstract pieces limited on the Ethereum blockchain. Each unique artwork is randomly generated from a combination of over 400 individually hand-drawn elements.",
-      category: "Paintings"
-    },
-    {
-      id: 2,
-      title: "Mountain Dreams",
-      artist: "Michel Angelo",
-      image: "https://i.pinimg.com/736x/4c/ca/32/4cca324472f172eb397189cc667d3cde.jpg",
-      available: false,
-      forSale: false,
-      price: "$1,200",
-      year: 2022,
-      description: "A serene mountain landscape capturing the essence of nature's majesty, painted with intricate detail and passionate brushwork.",
-      category: "Paintings"
-    },
-    {
-      id: 3,
-      title: "Blue Serenity",
-      artist: "Pablo Picasso",
-      image: "https://i.pinimg.com/736x/6a/30/ad/6a30ad236772c6481c42bea92b6b20be.jpg",
-      available: true,
-      forSale: true,
-      price: "$1,500",
-      year: 2023,
-      description: "A mesmerizing blue composition that evokes feelings of calm and introspection through geometric forms and subtle color variations.",
-      category: "Paintings"
-    }
-  ],
-  "Sculptures": [
-    {
-      id: 4,
-      title: "Bronze Elegance",
-      artist: "Michel Angelo",
-      image: "https://i.pinimg.com/736x/7f/29/9d/7f299d29c147e3aaf0362e9b9de2abff.jpg",
-      available: true,
-      forSale: true,
-      price: "$3,200",
-      year: 2021,
-      description: "A stunning bronze sculpture that captures the fluidity and grace of human movement in a timeless art form.",
-      category: "Sculptures"
-    },
-    {
-      id: 5,
-      title: "Marble Flow",
-      artist: "Bonita Rizka",
-      image: "https://i.pinimg.com/736x/a9/12/73/a91273677b2faec433397d6c1cdf3475.jpg",
-      available: true,
-      forSale: false,
-      price: "Not for sale",
-      year: 2023,
-      description: "A contemporary marble masterpiece that challenges traditional sculpture forms with organic flowing shapes and expert craftsmanship.",
-      category: "Sculptures"
-    }
-  ],
-  "Illustrations": [
-    {
-      id: 6,
-      title: "Forest Wildlife",
-      artist: "Albrecht Dürer",
-      image: "https://drawpaintacademy.com/wp-content/uploads/2022/07/Albrecht-Du%E2%95%A0erer-Young-Hare-1502.jpg",
-      available: true,
-      forSale: true,
-      price: "$650",
-      year: 2022,
-      description: "A meticulously detailed illustration of forest wildlife, showcasing exceptional technical skill and observation of nature.",
-      category: "Illustrations"
-    },
-    {
-      id: 7,
-      title: "Birds of Paradise",
-      artist: "Frans Snyders",
-      image: "https://drawpaintacademy.com/wp-content/uploads/2022/07/Frans-Snyders-Concert-of-Birds-1629-1630.jpg",
-      available: false,
-      forSale: false,
-      price: "$800",
-      year: 2021,
-      description: "A vibrant illustration celebrating the diversity and beauty of exotic birds, rendered with remarkable attention to color and form.",
-      category: "Illustrations"
-    }
-  ],
-  "Abstract Art": [
-    {
-      id: 8,
-      title: "Geometric Symphony",
-      artist: "Wassily Kandinsky",
-      image: "https://i0.wp.com/blog.artsper.com/wp-content/uploads/2016/05/18040_1_l.jpg?resize=1024%2C687&ssl=1",
-      available: true,
-      forSale: true,
-      price: "$1,800",
-      year: 2022,
-      description: "A dynamic composition of geometric forms and bold colors that creates visual rhythm and emotional resonance in the viewer.",
-      category: "Abstract Art"
-    },
-    {
-      id: 9,
-      title: "Colored Squares",
-      artist: "Wassily Kandinsky",
-      image: "https://i0.wp.com/blog.artsper.com/wp-content/uploads/2016/05/geo1.jpg?w=517&ssl=1",
-      available: true,
-      forSale: true,
-      price: "$2,200",
-      year: 2023,
-      description: "A striking arrangement of colored squares that explores the relationship between form, color, and spatial perception.",
-      category: "Abstract Art"
-    },
-    {
-      id: 10,
-      title: "Circular Patterns",
-      artist: "Modern Artist",
-      image: "https://i0.wp.com/blog.artsper.com/wp-content/uploads/2016/05/geo4.jpg?resize=1024%2C1024&ssl=1",
-      available: false,
-      forSale: false,
-      price: "Not for sale",
-      year: 2022,
-      description: "A mesmerizing exploration of circular patterns that creates optical illusions and invites the viewer to find meaning in abstraction.",
-      category: "Abstract Art"
-    }
-  ],
-  "Photography": [
-    {
-      id: 11,
-      title: "Urban Reflections",
-      artist: "Modern Artist",
-      image: "https://images.unsplash.com/photo-1558865869-c93f6f8482af?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bW9kZXJuJTIwYXJ0fGVufDB8fDB8fHww",
-      available: true,
-      forSale: true,
-      price: "$450",
-      year: 2023,
-      description: "A contemplative photograph capturing the interplay of light and architecture in the modern urban landscape.",
-      category: "Photography"
-    },
-    {
-      id: 12,
-      title: "Nature Composition",
-      artist: "Modern Artist",
-      image: "https://images.unsplash.com/photo-1583407723467-9b2d22504831?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bW9kZXJuJTIwYXJ0fGVufDB8fDB8fHww",
-      available: true,
-      forSale: true,
-      price: "$550",
-      year: 2022,
-      description: "A stunning photographic composition that reveals the hidden patterns and textures found in natural environments.",
-      category: "Photography"
-    }
-  ]
-};
+import ArtworkDetailPage from "./ArtDetail";
+import { db } from "../firebase/firebaseConfig"; // Import the Firestore db
+import { collection, getDocs, query, where } from "firebase/firestore"; // Import Firestore query functions
 
 const GalleryPage = ({ onArtistClick, onBackClick }) => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [artworksToShow, setArtworksToShow] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedArtwork, setSelectedArtwork] = useState(null);
+  const [categories, setCategories] = useState(["All"]);
 
-  // Get all categories
-  const categories = ["All", ...Object.keys(artworkData)];
-
-  // Filter artwork based on selected category
+  // Fetch artworks from Firestore
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      if (selectedCategory === "All") {
-        // Flatten all artworks from all categories
-        const allArtworks = Object.values(artworkData).flat();
-        setArtworksToShow(allArtworks);
-      } else {
-        setArtworksToShow(artworkData[selectedCategory] || []);
+    const fetchArtworks = async () => {
+      setLoading(true);
+      try {
+        const artworksCollection = collection(db, "artworks");
+        const artworksSnapshot = await getDocs(artworksCollection);
+        
+        const artworksData = [];
+        const categorySet = new Set(["All"]);
+        
+        artworksSnapshot.forEach((doc) => {
+          const artwork = {
+            id: doc.id,
+            ...doc.data(),
+            // Format price to display as currency if it exists
+            price: doc.data().price ? `$${doc.data().price}` : "Not for sale"
+          };
+          
+          // Add category to our set of categories
+          if (artwork.category) {
+            categorySet.add(artwork.category);
+          }
+          
+          artworksData.push(artwork);
+        });
+        
+        // Convert Set to Array for categories
+        setCategories(Array.from(categorySet));
+        
+        // Filter artworks based on selected category
+        if (selectedCategory === "All") {
+          setArtworksToShow(artworksData);
+        } else {
+          setArtworksToShow(artworksData.filter(artwork => artwork.category === selectedCategory));
+        }
+      } catch (error) {
+        console.error("Error fetching artworks: ", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    }, 300);
+    };
+
+    fetchArtworks();
   }, [selectedCategory]);
 
   // Handle category change with smooth transitions
@@ -191,15 +64,23 @@ const GalleryPage = ({ onArtistClick, onBackClick }) => {
   };
 
   // Handle artist click
-  const handleArtistClick = (artistName) => {
+  const handleArtistClick = async (artistName) => {
     if (onArtistClick) {
-      // Find all artworks by this artist
-      const artistArtworks = Object.values(artworkData)
-        .flat()
-        .filter(artwork => artwork.artist === artistName)
-        .map(artwork => artwork.image);
-      
-      onArtistClick(artistName, artistArtworks);
+      try {
+        // Query Firestore for all artworks by this artist
+        const artworksCollection = collection(db, "artworks");
+        const artistQuery = query(artworksCollection, where("artist", "==", artistName));
+        const artistArtworksSnapshot = await getDocs(artistQuery);
+        
+        const artistArtworks = [];
+        artistArtworksSnapshot.forEach((doc) => {
+          artistArtworks.push(doc.data().image);
+        });
+        
+        onArtistClick(artistName, artistArtworks);
+      } catch (error) {
+        console.error("Error fetching artist artworks: ", error);
+      }
     }
   };
 
@@ -306,11 +187,11 @@ const GalleryPage = ({ onArtistClick, onBackClick }) => {
                         {artwork.available ? "Available" : "Not Available"}
                       </span>
                       <span className={`px-2 py-1 rounded-md text-xs font-bold ${
-                        artwork.forSale 
+                        artwork.forsale 
                           ? "bg-blue-500 text-white" 
                           : "bg-gray-500 text-white"
                       }`}>
-                        {artwork.forSale ? "For Sale" : "Not For Sale"}
+                        {artwork.forsale ? "For Sale" : "Not For Sale"}
                       </span>
                     </div>
                     
