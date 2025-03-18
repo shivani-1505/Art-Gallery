@@ -1,10 +1,95 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { db } from "../firebase/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
-const ArtworkDetailPage = ({ artwork, onBackClick }) => {
-  // If no artwork is provided, show a placeholder
-  if (!artwork) {
-    artwork = {
+const ArtDetail = ({ artwork, artworkId, onBackClick, onAddToCart }) => {
+  const [loadedArtwork, setLoadedArtwork] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  // If artwork ID is provided but not the artwork object, fetch it from Firestore
+  useEffect(() => {
+    const fetchArtworkById = async () => {
+      if (artworkId && !artwork) {
+        setLoading(true);
+        try {
+          const artworkDocRef = doc(db, "artworks", artworkId);
+          const artworkSnapshot = await getDoc(artworkDocRef);
+          
+          if (artworkSnapshot.exists()) {
+            setLoadedArtwork({
+              id: artworkSnapshot.id,
+              ...artworkSnapshot.data(),
+              price: artworkSnapshot.data().price ? `$${artworkSnapshot.data().price}` : "Not for sale"
+            });
+          } else {
+            console.error("Artwork not found!");
+            setLoadedArtwork(null);
+          }
+        } catch (error) {
+          console.error("Error fetching artwork: ", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    fetchArtworkById();
+  }, [artworkId, artwork]);
+
+  // Use the loaded artwork if available, otherwise use the passed artwork prop
+  const displayArtwork = loadedArtwork || artwork;
+
+  // Handle add to cart
+  const handleAddToCart = () => {
+    // Get existing cart from localStorage
+    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    // Check if the item is already in the cart
+    const itemIndex = existingCart.findIndex(item => item.id === displayArtwork.id);
+    
+    if (itemIndex === -1) {
+      // If not in cart, add it
+      const updatedCart = [...existingCart, displayArtwork];
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+      setAddedToCart(true);
+      
+      // If onAddToCart function is provided, call it
+      if (onAddToCart) {
+        onAddToCart(displayArtwork);
+      }
+      
+      // Reset the "Added to Cart" message after a delay
+      setTimeout(() => {
+        setAddedToCart(false);
+      }, 2000);
+    } else {
+      // Item is already in cart
+      alert("This artwork is already in your cart.");
+    }
+  };
+  
+  // Handle purchase now
+  const handlePurchaseNow = () => {
+    // Here you would typically redirect to a checkout page
+    // For now, we'll just log that purchase was initiated
+    console.log("Purchase initiated for:", displayArtwork.title);
+    alert(`Thank you for purchasing "${displayArtwork.title}"! This would normally take you to a checkout page.`);
+  };
+
+  // If no artwork is provided and not loaded yet, show a loading state
+  if (!displayArtwork && loading) {
+    return (
+      <div className="min-h-screen w-screen bg-black text-white flex items-center justify-center">
+        <p className="text-xl">Loading artwork details...</p>
+      </div>
+    );
+  }
+
+  // If no artwork is available, show a placeholder
+  if (!displayArtwork) {
+    const placeholderArtwork = {
       id: 0,
       title: "Artwork Not Found",
       artist: "Unknown Artist",
@@ -12,11 +97,25 @@ const ArtworkDetailPage = ({ artwork, onBackClick }) => {
       price: "$0.00",
       year: new Date().getFullYear(),
       available: false,
-      forSale: false,
+      forsale: false,
       description: "This artwork could not be found.",
       category: "Unknown"
     };
+    
+    return renderArtworkDetail(placeholderArtwork, onBackClick, handleAddToCart, handlePurchaseNow, addedToCart);
   }
+
+  return renderArtworkDetail(displayArtwork, onBackClick, handleAddToCart, handlePurchaseNow, addedToCart);
+};
+
+// Helper function to render the artwork detail content
+const renderArtworkDetail = (artwork, onBackClick, handleAddToCart, handlePurchaseNow, addedToCart) => {
+  // Convert price string to number for calculations if needed
+  const priceValue = typeof artwork.price === 'string' && artwork.price.startsWith('$') 
+    ? parseFloat(artwork.price.substring(1).replace(/,/g, '')) 
+    : (typeof artwork.price === 'number' ? artwork.price : 0);
+    
+  const isPurchasable = artwork.available && (artwork.forsale || artwork.forSale) && priceValue > 0;
 
   return (
     <div className="min-h-screen w-screen bg-black text-white px-6 py-12 overflow-hidden">
@@ -24,7 +123,7 @@ const ArtworkDetailPage = ({ artwork, onBackClick }) => {
       <div className="max-w-6xl mx-auto mb-6">
         <button 
           onClick={onBackClick} 
-          className="text-black hover:text-gray-600 transition-colors"
+          className="text-white hover:text-gray-400 transition-colors"
           aria-label="Go back"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -32,7 +131,6 @@ const ArtworkDetailPage = ({ artwork, onBackClick }) => {
           </svg>
         </button>
       </div>
-
       {/* Main Content */}
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -49,7 +147,6 @@ const ArtworkDetailPage = ({ artwork, onBackClick }) => {
               className="w-full h-auto object-contain rounded-lg"
             />
           </motion.div>
-
           {/* Artwork Details - Right Side */}
           <motion.div 
             className="lg:w-2/5"
@@ -71,16 +168,16 @@ const ArtworkDetailPage = ({ artwork, onBackClick }) => {
                 <span className="text-lg font-medium">{artwork.artist}</span>
               </div>
             </div>
-
             {/* Artwork Title */}
-            <h1 className="text-3xl font-bold mb-2">{artwork.title} #{artwork.id}</h1>
+            <h1 className="text-3xl font-bold mb-2">
+              {artwork.title} {artwork.id && `#${typeof artwork.id === 'string' ? artwork.id.substring(0, 6) : artwork.id}`}
+            </h1>
             
             {/* Description */}
             <p className="text-gray-400 mb-6">
               {artwork.description || `A beautiful artwork by ${artwork.artist} created in ${artwork.year}. 
               This piece is part of the ${artwork.category} collection.`}
             </p>
-
             {/* Details Section */}
             <div className="mb-6">
               <p className="text-gray-400 mb-2">Details</p>
@@ -113,7 +210,6 @@ const ArtworkDetailPage = ({ artwork, onBackClick }) => {
                 </span>
               </div>
             </div>
-
             {/* Status and Price */}
             <div className="flex justify-between items-center mb-6">
               <div>
@@ -126,16 +222,39 @@ const ArtworkDetailPage = ({ artwork, onBackClick }) => {
               
               <div className="text-right">
                 <p className="text-sm text-gray-400">Price</p>
-                <p className="text-2xl font-bold">{artwork.price}</p>
+                <p className="text-2xl font-bold">{typeof artwork.price === 'number' ? `$${artwork.price}` : artwork.price}</p>
               </div>
             </div>
-
-            {/* Purchase Button (if available) */}
-            {artwork.available && artwork.forSale && (
-              <button className="w-full bg-white text-black py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors">
-                Purchase Now
-              </button>
+            
+            {/* Added to Cart Message */}
+            {addedToCart && (
+              <div className="bg-green-500 text-white p-2 rounded-md mb-4 text-center">
+                Added to cart successfully!
+              </div>
             )}
+            
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-3">
+              {/* Purchase Button */}
+              {isPurchasable && (
+                <button 
+                  onClick={handlePurchaseNow}
+                  className="w-full bg-white text-black py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
+                >
+                  Purchase Now
+                </button>
+              )}
+              
+              {/* Add to Cart Button */}
+              {artwork.available && (
+                <button 
+                  onClick={handleAddToCart}
+                  className="w-full bg-gray-800 text-white py-3 rounded-xl font-medium hover:bg-gray-700 transition-colors border border-gray-600"
+                >
+                  Add to Cart
+                </button>
+              )}
+            </div>
           </motion.div>
         </div>
       </div>
@@ -143,4 +262,4 @@ const ArtworkDetailPage = ({ artwork, onBackClick }) => {
   );
 };
 
-export default ArtworkDetailPage;
+export default ArtDetail;

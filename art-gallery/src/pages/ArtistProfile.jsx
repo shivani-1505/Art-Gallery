@@ -1,14 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { MdArrowBack } from "react-icons/md";
 import { motion } from "framer-motion";
+import ArtDetail from "./ArtDetail"; // Import ArtDetail component
 
 const ArtistProfile = ({ artist, onBackClick }) => {
+  // State to track selected artwork for detail view
+  const [selectedArtwork, setSelectedArtwork] = useState(null);
+  
+  // Handle back from artwork detail
+  const handleBackFromDetail = () => {
+    setSelectedArtwork(null);
+  };
+  
+  // Handle artwork click
+  const handleArtworkClick = (artwork) => {
+    setSelectedArtwork(artwork);
+  };
+
   if (!artist)
     return (
       <p className="text-center text-gray-400 mt-10">
         Select an artist to see details.
       </p>
     );
+    
+  // If an artwork is selected, show its details
+  if (selectedArtwork) {
+    return <ArtDetail artwork={selectedArtwork} onBackClick={handleBackFromDetail} />;
+  }
 
   return (
     <div className="bg-black min-h-screen w-screen text-white p-6">
@@ -61,13 +80,24 @@ const ArtistProfile = ({ artist, onBackClick }) => {
               visible: { transition: { staggerChildren: 0.1 } },
             }}
           >
-            {artist.famousArtworks.map((artwork, index) => (
+            {artist.famousArtworks && artist.famousArtworks.map((artwork, index) => (
               <motion.div
                 key={index}
-                className="bg-gray-800 rounded-lg overflow-hidden shadow-xl relative group"
+                className="bg-gray-800 rounded-lg overflow-hidden shadow-xl relative group cursor-pointer"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
+                onClick={() => handleArtworkClick({
+                  id: `${artist.name}-artwork-${index}`,
+                  title: artwork.title,
+                  artist: artist.name,
+                  image: artwork.imageUrl,
+                  year: artwork.year || "Unknown",
+                  category: artwork.category || "Fine Art",
+                  price: artwork.price || "Price on Request",
+                  available: artwork.available !== false,
+                  description: artwork.description || `A masterpiece by ${artist.name}. ${artwork.title} is one of the artist's most recognized works.`
+                })}
               >
                 <img
                   src={artwork.imageUrl}
@@ -77,10 +107,34 @@ const ArtistProfile = ({ artist, onBackClick }) => {
                 <div className="p-4">
                   <p className="text-center text-gray-300">{artwork.title}</p>
                 </div>
+                
+                {/* Hover overlay - similar to the gallery view */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <h3 className="text-lg font-semibold">{artwork.title}</h3>
+                      <p className="text-gray-300 text-sm">
+                        {artist.name}
+                      </p>
+                    </div>
+                    {artwork.price && (
+                      <div className="bg-white text-black px-3 py-1 rounded-full shadow-md font-bold text-sm">
+                        {typeof artwork.price === 'number' ? `$${artwork.price}` : artwork.price}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </motion.div>
             ))}
           </motion.div>
         </div>
+        
+        {/* Display a message if no artworks are available */}
+        {(!artist.famousArtworks || artist.famousArtworks.length === 0) && (
+          <div className="text-center py-8">
+            <p className="text-gray-400">No artworks available for this artist.</p>
+          </div>
+        )}
       </div>
     </div>
   );

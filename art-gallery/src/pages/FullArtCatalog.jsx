@@ -1,105 +1,184 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack } from "react-icons/md";
-
-// Use the same image data from the original component
-const imageData = {
-  All: ["https://i.pinimg.com/474x/25/c9/3d/25c93dd41f16048a836d5837dae4e638.jpg", "https://i.pinimg.com/736x/a9/12/73/a91273677b2faec433397d6c1cdf3475.jpg", "https://i.pinimg.com/736x/79/c2/41/79c241ffee4456a2b8cc8515d4dc41df.jpg"],
-  Renaissance: ["https://i.pinimg.com/736x/4c/ca/32/4cca324472f172eb397189cc667d3cde.jpg", "https://i.pinimg.com/736x/7f/29/9d/7f299d29c147e3aaf0362e9b9de2abff.jpg"],
-  Abstract: ["https://i.pinimg.com/736x/6a/30/ad/6a30ad236772c6481c42bea92b6b20be.jpg", "https://ik.imagekit.io/theartling/prod/original_images/62.jpg?tr=w-950", "https://ik.imagekit.io/theartling/prod/original_images/chu_teh_chun.jpg?tr=w-950"],
-  Animal: ["https://drawpaintacademy.com/wp-content/uploads/2022/07/Albrecht-Du%E2%95%A0erer-Young-Hare-1502.jpg", "https://drawpaintacademy.com/wp-content/uploads/2022/07/Frans-Snyders-Concert-of-Birds-1629-1630.jpg"],
-  "Geometric Art": ["https://i0.wp.com/blog.artsper.com/wp-content/uploads/2016/05/18040_1_l.jpg?resize=1024%2C687&ssl=1", "https://i0.wp.com/blog.artsper.com/wp-content/uploads/2016/05/geo1.jpg?w=517&ssl=1", "https://i0.wp.com/blog.artsper.com/wp-content/uploads/2016/05/geo4.jpg?resize=1024%2C1024&ssl=1"],
-  Modern: ["https://images.unsplash.com/photo-1558865869-c93f6f8482af?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bW9kZXJuJTIwYXJ0fGVufDB8fDB8fHww", "https://images.unsplash.com/photo-1583407723467-9b2d22504831?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bW9kZXJuJTIwYXJ0fGVufDB8fDB8fHww"],
-};
-
-// Artist data mapping
-const artistData = {
-  "Bonita Rizka": {
-    images: [
-      "https://i.pinimg.com/474x/25/c9/3d/25c93dd41f16048a836d5837dae4e638.jpg", 
-      "https://i.pinimg.com/736x/a9/12/73/a91273677b2faec433397d6c1cdf3475.jpg"
-    ]
-  },
-  "Michel Angelo": {
-    images: [
-      "https://i.pinimg.com/736x/4c/ca/32/4cca324472f172eb397189cc667d3cde.jpg", 
-      "https://i.pinimg.com/736x/7f/29/9d/7f299d29c147e3aaf0362e9b9de2abff.jpg"
-    ]
-  },
-  "Pablo Picasso": {
-    images: [
-      "https://i.pinimg.com/736x/6a/30/ad/6a30ad236772c6481c42bea92b6b20be.jpg", 
-      "https://ik.imagekit.io/theartling/prod/original_images/62.jpg?tr=w-950"
-    ]
-  },
-  "Albrecht Dürer": {
-    images: [
-      "https://drawpaintacademy.com/wp-content/uploads/2022/07/Albrecht-Du%E2%95%A0erer-Young-Hare-1502.jpg"
-    ]
-  },
-  "Frans Snyders": {
-    images: [
-      "https://drawpaintacademy.com/wp-content/uploads/2022/07/Frans-Snyders-Concert-of-Birds-1629-1630.jpg"
-    ]
-  },
-  "Wassily Kandinsky": {
-    images: [
-      "https://i0.wp.com/blog.artsper.com/wp-content/uploads/2016/05/18040_1_l.jpg?resize=1024%2C687&ssl=1", 
-      "https://i0.wp.com/blog.artsper.com/wp-content/uploads/2016/05/geo1.jpg?w=517&ssl=1"
-    ]
-  },
-  "Modern Artist": {
-    images: [
-      "https://images.unsplash.com/photo-1558865869-c93f6f8482af?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bW9kZXJuJTIwYXJ0fGVufDB8fDB8fHww", 
-      "https://images.unsplash.com/photo-1583407723467-9b2d22504831?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bW9kZXJuJTIwYXJ0fGVufDB8fDB8fHww"
-    ]
-  }
-};
-
-// Map images to artists
-const imageToArtist = {};
-Object.entries(artistData).forEach(([artist, data]) => {
-  data.images.forEach(img => {
-    imageToArtist[img] = artist;
-  });
-});
+import { db } from "../firebase/firebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import ArtDetail from "./ArtDetail"; // Import ArtDetail component
 
 export default function FullArtCatalog({ onBackClick, onArtistClick }) {
   const [selected, setSelected] = useState("All");
   const [imagesToShow, setImagesToShow] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState(["All"]);
+  const [artists, setArtists] = useState({});
+  
+  // Map of image URLs to their artwork details
+  const [imageDetails, setImageDetails] = useState({});
 
-  // Function to get all images for display
-  const getAllImages = () => {
-    if (selected === "All") {
-      // Flatten the array of all images from all categories
-      return Object.values(imageData).flat();
+  // Store the complete artist data
+  const [artistsData, setArtistsData] = useState({});
+  
+  // Selected artwork for detail view
+  const [selectedArtwork, setSelectedArtwork] = useState(null);
+
+  // Function to fetch all artworks from Firestore
+  const fetchArtworks = async () => {
+    setLoading(true);
+    try {
+      const artworksCollection = collection(db, "artworks");
+      const snapshot = await getDocs(artworksCollection);
+      
+      // Build category set, artist map, and image details map
+      const categorySet = new Set(["All"]);
+      const artistsMap = {};
+      const imageDetailsMap = {};
+      const allImages = [];
+      const artistNames = new Set();
+
+      snapshot.forEach((doc) => {
+        const artwork = { id: doc.id, ...doc.data() };
+        
+        // Add to category set
+        if (artwork.category) {
+          categorySet.add(artwork.category);
+        }
+        
+        // Add to artists map
+        if (artwork.artist) {
+          if (!artistsMap[artwork.artist]) {
+            artistsMap[artwork.artist] = { images: [] };
+          }
+          
+          if (artwork.image) {
+            artistsMap[artwork.artist].images.push(artwork.image);
+            
+            // Add to image details map
+            imageDetailsMap[artwork.image] = artwork;
+            
+            // Add to all images array
+            allImages.push(artwork.image);
+          }
+
+          // Add artist name to the set for later fetching
+          artistNames.add(artwork.artist);
+        }
+      });
+      
+      // Update state
+      setCategories(Array.from(categorySet));
+      setArtists(artistsMap);
+      setImageDetails(imageDetailsMap);
+      
+      // Filter images based on selected category
+      if (selected === "All") {
+        setImagesToShow(allImages);
+      } else {
+        // Filter by category
+        const filteredImages = Object.values(imageDetailsMap)
+          .filter(artwork => artwork.category === selected)
+          .map(artwork => artwork.image);
+        
+        setImagesToShow(filteredImages);
+      }
+
+      // Fetch complete artist data for all artists found in artworks
+      fetchArtistsData(Array.from(artistNames));
+    } catch (error) {
+      console.error("Error fetching artworks:", error);
+    } finally {
+      setLoading(false);
     }
-    return imageData[selected] || [];
   };
 
+  // Function to fetch complete artist data from Firestore
+  const fetchArtistsData = async (artistNames) => {
+    try {
+      const artistsCollection = collection(db, "artists");
+      const snapshot = await getDocs(artistsCollection);
+      
+      const artistsDataMap = {};
+      snapshot.forEach((doc) => {
+        const artist = { id: doc.id, ...doc.data() };
+        if (artistNames.includes(artist.name)) {
+          artistsDataMap[artist.name] = artist;
+        }
+      });
+      
+      setArtistsData(artistsDataMap);
+    } catch (error) {
+      console.error("Error fetching artists data:", error);
+    }
+  };
+
+  // Fetch data on mount
+  useEffect(() => {
+    fetchArtworks();
+  }, []);
+
+  // Filter images when category changes
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
-      setImagesToShow(getAllImages());
+      if (selected === "All") {
+        // Show all images
+        setImagesToShow(Object.keys(imageDetails));
+      } else {
+        // Filter by category
+        const filteredImages = Object.values(imageDetails)
+          .filter(artwork => artwork.category === selected)
+          .map(artwork => artwork.image);
+        
+        setImagesToShow(filteredImages);
+      }
       setLoading(false);
-    }, 5);
-  }, [selected]);
-
-  const categories = Object.keys(imageData);
+    }, 300);
+  }, [selected, imageDetails]);
 
   // Get artist name for a specific image
   const getArtistName = (image) => {
-    return imageToArtist[image] || "Artist Name";
+    return imageDetails[image]?.artist || "Unknown Artist";
   };
 
-  // Handle artist click
+  // Get artwork price for a specific image
+  const getArtworkPrice = (image) => {
+    const artwork = imageDetails[image];
+    if (!artwork || !artwork.price) return "Price on Request";
+    return `$${artwork.price}`;
+  };
+
+  // Get artwork title for a specific image
+  const getArtworkTitle = (image, index) => {
+    return imageDetails[image]?.title || `Artwork ${index + 1}`;
+  };
+
+  // Handle artist click - pass the complete artist object
   const handleArtistClick = (artistName, e) => {
     e.stopPropagation(); // Prevent the click from bubbling up
     if (onArtistClick) {
-      onArtistClick(artistName, artistData[artistName]?.images || []);
+      // Use the complete artist data object
+      const artistData = artistsData[artistName];
+      if (artistData) {
+        onArtistClick(artistData);
+      } else {
+        console.error(`Complete data for artist "${artistName}" not found`);
+      }
     }
   };
+  
+  // Handle artwork click to view details
+  const handleArtworkClick = (image) => {
+    setSelectedArtwork(imageDetails[image]);
+  };
+  
+  // Handle back from artwork detail
+  const handleBackFromDetail = () => {
+    setSelectedArtwork(null);
+  };
+  
+  // If an artwork is selected, show its details
+  if (selectedArtwork) {
+    return <ArtDetail artwork={selectedArtwork} onBackClick={handleBackFromDetail} />;
+  }
 
   return (
     <div className="bg-black min-h-screen w-screen overflow-x-hidden text-white m-0 p-0">
@@ -153,16 +232,17 @@ export default function FullArtCatalog({ onBackClick, onArtistClick }) {
               imagesToShow.map((image, index) => (
                 <motion.div
                   key={`${selected}-${image}-${index}`}
-                  className="aspect-[3/4] rounded-xl overflow-hidden shadow-2xl relative group"
+                  className="aspect-[3/4] rounded-xl overflow-hidden shadow-2xl relative group cursor-pointer"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -30 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
+                  onClick={() => handleArtworkClick(image)}
                 >
                   {/* Artwork Image - Full Height */}
                   <img
                     src={image}
-                    alt={`Artwork ${index + 1}`}
+                    alt={getArtworkTitle(image, index)}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
 
@@ -170,7 +250,7 @@ export default function FullArtCatalog({ onBackClick, onArtistClick }) {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                     <div className="flex justify-between items-end">
                       <div>
-                        <h3 className="text-xl font-semibold">Artwork {index + 1}</h3>
+                        <h3 className="text-xl font-semibold">{getArtworkTitle(image, index)}</h3>
                         {/* Make artist name clickable */}
                         <p 
                           className="text-gray-300 text-sm cursor-pointer hover:text-white hover:underline"
@@ -180,7 +260,7 @@ export default function FullArtCatalog({ onBackClick, onArtistClick }) {
                         </p>
                       </div>
                       <div className="bg-white text-black px-4 py-2 rounded-full shadow-md font-bold">
-                        $300
+                        {getArtworkPrice(image)}
                       </div>
                     </div>
                   </div>
@@ -189,6 +269,20 @@ export default function FullArtCatalog({ onBackClick, onArtistClick }) {
           </AnimatePresence>
         </motion.div>
       </div>
+
+      {/* Loading State */}
+      {loading && (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-xl text-gray-400">Loading artworks...</p>
+        </div>
+      )}
+      
+      {/* Empty State */}
+      {!loading && imagesToShow.length === 0 && (
+        <div className="flex justify-center items-center h-64">
+          <p className="text-xl text-gray-400">No artworks found in this category.</p>
+        </div>
+      )}
     </div>
   );
 }
