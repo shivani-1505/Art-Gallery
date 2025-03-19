@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { db } from "../firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
-const ArtDetail = ({ artwork, artworkId, onBackClick, onAddToCart }) => {
+const ArtDetail = ({ artwork, artworkId, onBackClick }) => {
   const [loadedArtwork, setLoadedArtwork] = useState(null);
   const [loading, setLoading] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
@@ -55,10 +55,8 @@ const ArtDetail = ({ artwork, artworkId, onBackClick, onAddToCart }) => {
       localStorage.setItem('cart', JSON.stringify(updatedCart));
       setAddedToCart(true);
       
-      // If onAddToCart function is provided, call it
-      if (onAddToCart) {
-        onAddToCart(displayArtwork);
-      }
+      // Trigger custom event to update cart count in header
+      window.dispatchEvent(new Event('cartUpdated'));
       
       // Reset the "Added to Cart" message after a delay
       setTimeout(() => {

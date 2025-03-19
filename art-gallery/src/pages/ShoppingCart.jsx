@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack, MdDeleteOutline, MdShoppingCartCheckout } from "react-icons/md";
 
 const ShoppingCart = ({ onBackClick }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [orderPlaced, setOrderPlaced] = useState(false);
   
   // Load cart items from localStorage
   useEffect(() => {
@@ -33,6 +34,9 @@ const ShoppingCart = ({ onBackClick }) => {
     const updatedCart = cartItems.filter(item => item.id !== itemId);
     setCartItems(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
+    
+    // Dispatch custom event so the header can update the cart count
+    window.dispatchEvent(new Event('cartUpdated'));
   };
   
   // Handle checkout
@@ -42,11 +46,16 @@ const ShoppingCart = ({ onBackClick }) => {
       return;
     }
     
-    alert("Proceeding to checkout. In a real application, this would redirect to a payment gateway.");
-    // In a real application, you would redirect to a checkout page
-    // For now, we'll just clear the cart
-    setCartItems([]);
-    localStorage.removeItem('cart');
+    // Show animation and "Order Placed" message
+    setOrderPlaced(true);
+    
+    // Clear cart after a delay
+    setTimeout(() => {
+      setCartItems([]);
+      localStorage.removeItem('cart');
+      // Dispatch custom event so the header can update the cart count
+      window.dispatchEvent(new Event('cartUpdated'));
+    }, 2000);
   };
 
   return (
@@ -65,13 +74,72 @@ const ShoppingCart = ({ onBackClick }) => {
         </div>
       </div>
       
+      {/* Order Placed Success Animation */}
+      <AnimatePresence>
+        {orderPlaced && (
+          <motion.div 
+            className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className="bg-white rounded-xl p-12 flex flex-col items-center"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <motion.div
+                className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <motion.svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="48" 
+                  height="48" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="3" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  className="text-white"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </motion.svg>
+              </motion.div>
+              <h2 className="text-black text-2xl font-bold mb-2">Order Placed!</h2>
+              <p className="text-gray-600 text-center">
+                Thank you for your purchase. Your order has been placed successfully.
+              </p>
+              <motion.button
+                className="mt-6 px-6 py-2 bg-black text-white rounded-lg"
+                onClick={() => {
+                  setOrderPlaced(false);
+                  onBackClick();
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Continue Shopping
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* Main Content */}
       <div className="max-w-6xl mx-auto">
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-xl text-gray-400">Loading your cart...</p>
           </div>
-        ) : cartItems.length === 0 ? (
+        ) : cartItems.length === 0 && !orderPlaced ? (
           <div className="bg-gray-900 rounded-xl p-8 text-center">
             <div className="flex flex-col items-center justify-center gap-4">
               <MdShoppingCartCheckout className="text-6xl text-gray-600" />
@@ -87,7 +155,7 @@ const ShoppingCart = ({ onBackClick }) => {
               </button>
             </div>
           </div>
-        ) : (
+        ) : !orderPlaced ? (
           <div>
             {/* Cart Items */}
             <div className="bg-gray-900 rounded-xl overflow-hidden shadow-lg mb-6">
@@ -169,15 +237,17 @@ const ShoppingCart = ({ onBackClick }) => {
             
             {/* Checkout Button */}
             <div className="flex justify-end">
-              <button 
+              <motion.button 
                 onClick={handleCheckout}
                 className="px-8 py-3 bg-white text-black rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <MdShoppingCartCheckout /> Proceed to Checkout
-              </button>
+              </motion.button>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

@@ -4,17 +4,17 @@ import { MdArrowBack } from "react-icons/md";
 
 export default function UserProfile({ user, onBackClick, onLogout }) {
   return (
-    <div className="bg-black min-h-screen w-screen flex flex-col items-center text-white">
-      {/* Header Section */}
-      <header className="w-full bg-white text-black py-4 px-6 flex items-center">
+    <div className="bg-black min-h-screen w-screen flex flex-col items-center text-white pt-16">
+      {/* Back button without header */}
+      <div className="self-start ml-6 mb-6">
         <button 
           onClick={onBackClick} 
-          className="mr-4 p-1 rounded-full hover:bg-gray-200 transition-colors duration-300"
+          className="p-1 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center"
         >
           <MdArrowBack size={24} />
+          <span className="ml-2">Back</span>
         </button>
-        <h1 className="text-xl font-bold">Art Gallery</h1>
-      </header>
+      </div>
 
       <div className="max-w-lg w-full bg-gray-900 p-8 rounded-2xl shadow-lg mt-6">
         {/* Profile Header */}

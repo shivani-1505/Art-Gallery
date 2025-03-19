@@ -1,56 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import image2 from '../assets/image4.avif';
 
-const Page1 = ({ onGalleryClick, onCartClick }) => {
-  const [cartItemCount, setCartItemCount] = useState(0);
-  
-  // Update cart count on mount and when localStorage changes
-  useEffect(() => {
-    const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      setCartItemCount(cart.length);
-    };
-    
-    // Initial count
-    updateCartCount();
-    
-    // Listen for storage events (when cart is updated in other tabs)
-    window.addEventListener('storage', updateCartCount);
-    window.addEventListener('cartUpdated', updateCartCount);
-    
-    return () => {
-      window.removeEventListener('storage', updateCartCount);
-      window.removeEventListener('cartUpdated', updateCartCount);
-    };
-  }, []);
-  
+const Page1 = ({ onGalleryClick }) => {
   return (
     <div>
-      {/* Header with Cart Icon */}
-      {onCartClick && (
-        <div className="fixed top-4 right-4 z-50">
-          <button
-            onClick={onCartClick}
-            className="relative bg-black bg-opacity-50 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-70 transition-colors"
-            aria-label="Shopping Cart"
-          >
-            {/* Shopping Cart Icon */}
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-            
-            {/* Item Count Badge */}
-            {cartItemCount > 0 && (
-              <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
-                {cartItemCount > 9 ? '9+' : cartItemCount}
-              </div>
-            )}
-          </button>
-        </div>
-      )}
-      
       {/* Hero Section */}
       <header 
         style={{

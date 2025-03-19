@@ -29,19 +29,21 @@ function ArtistDirectory({ onBackClick, onArtistSelect }) {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-black text-white px-6 py-12 overflow-hidden">
-      {/* Header with back button */}
+    <div className="min-h-screen w-screen bg-black text-white px-6 pt-16 pb-12 overflow-hidden">
+      {/* Back button without header */}
+      <div className="max-w-6xl mx-auto mb-8">
+        <button 
+          onClick={onBackClick} 
+          className="text-white hover:text-gray-300 transition-colors flex items-center"
+          aria-label="Go back to gallery"
+        >
+          <MdArrowBack className="text-2xl" />
+          <span className="ml-2">Back</span>
+        </button>
+      </div>
+      
       <div className="max-w-6xl mx-auto mb-12 px-4">
-        <div className="flex items-center mb-8 relative">
-          <button 
-            onClick={onBackClick} 
-            className="text-white hover:text-gray-300 transition-colors absolute left-0"
-            aria-label="Go back to gallery"
-          >
-            <MdArrowBack className="text-2xl" />
-          </button>
-          <h1 className="text-4xl font-bold text-center w-full">Our Contributing Artists</h1>
-        </div>
+        <h1 className="text-4xl font-bold text-center mb-8">Our Contributing Artists</h1>
         <p className="text-gray-400 text-center max-w-2xl mx-auto">
           Meet the talented artists who have contributed their unique vision and creativity to our gallery. 
           Click on any artist to learn more about their background, skills, and view their artwork collection.

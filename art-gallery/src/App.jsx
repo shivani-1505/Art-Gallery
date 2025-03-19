@@ -12,7 +12,7 @@ import GalleryPage from './pages/GalleryPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import UserProfile from './pages/UserProfile';
-import ShoppingCart from './pages/ShoppingCart'; // Import the new ShoppingCart component
+import ShoppingCart from './pages/ShoppingCart';
 
 function App() {
   const homeRef = useRef(null);
@@ -23,7 +23,7 @@ function App() {
   const faqRef = useRef(null);
   const sections = [homeRef, galleryRef, artSaleRef, virtualRef, reviewsRef, faqRef];
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [currentPage, setCurrentPage] = useState('login'); // Start with login page
+  const [currentPage, setCurrentPage] = useState('login');
   const [navigationHistory, setNavigationHistory] = useState(['login']);
   
   // User-related state
@@ -127,7 +127,7 @@ function App() {
   const handleLoginSuccess = (user) => {
     setUserData(user);
     setIsLoggedIn(true);
-    localStorage.setItem('user', JSON.stringify(user)); // Store user data
+    localStorage.setItem('user', JSON.stringify(user));
     navigateTo('main');
   };
   
@@ -135,7 +135,7 @@ function App() {
   const handleLogout = () => {
     setUserData(null);
     setIsLoggedIn(false);
-    localStorage.removeItem('user'); // Clear stored user data
+    localStorage.removeItem('user');
     navigateTo('login');
   };
   
@@ -180,6 +180,12 @@ function App() {
   const goToCart = () => {
     navigateTo('cart');
   };
+
+  // Determine if we should show the cart button
+  // Don't show in cart page, login, or signup
+  const showCartButton = currentPage !== 'cart' && 
+                         currentPage !== 'login' && 
+                         currentPage !== 'signup';
   
   // Render login page
   if (currentPage === 'login') {
@@ -199,11 +205,16 @@ function App() {
   
   // Render user profile page
   if (currentPage === 'userProfile') {
-    return <UserProfile 
-      user={userData}
-      onBackClick={goBack}
-      onLogout={handleLogout}
-    />;
+    return (
+      <>
+        {showCartButton && <CartButton cartItemCount={cartItemCount} onClick={goToCart} />}
+        <UserProfile 
+          user={userData}
+          onBackClick={goBack}
+          onLogout={handleLogout}
+        />
+      </>
+    );
   }
   
   // Render shopping cart page
@@ -215,7 +226,7 @@ function App() {
   if (currentPage === 'catalog') {
     return (
       <>
-        <CartButton cartItemCount={cartItemCount} onClick={goToCart} />
+        {showCartButton && <CartButton cartItemCount={cartItemCount} onClick={goToCart} />}
         <FullArtCatalog onBackClick={goBack} onArtistClick={goToArtistProfile} onAddToCart={handleAddToCart} />
       </>
     );
@@ -224,7 +235,7 @@ function App() {
   if (currentPage === 'artistProfile') {
     return (
       <>
-        <CartButton cartItemCount={cartItemCount} onClick={goToCart} />
+        {showCartButton && <CartButton cartItemCount={cartItemCount} onClick={goToCart} />}
         <ArtistProfile artist={artistInfo} onBackClick={goBack} onAddToCart={handleAddToCart} />
       </>
     );
@@ -233,7 +244,7 @@ function App() {
   if (currentPage === 'artistsDirectory') {
     return (
       <>
-        <CartButton cartItemCount={cartItemCount} onClick={goToCart} />
+        {showCartButton && <CartButton cartItemCount={cartItemCount} onClick={goToCart} />}
         <ArtistsDirectory onBackClick={goBack} onArtistSelect={goToArtistProfile} />
       </>
     );
@@ -242,42 +253,38 @@ function App() {
   if (currentPage === 'gallery') {
     return (
       <>
-        <CartButton cartItemCount={cartItemCount} onClick={goToCart} />
+        {showCartButton && <CartButton cartItemCount={cartItemCount} onClick={goToCart} />}
         <GalleryPage onBackClick={goBack} onArtistClick={goToArtistProfile} onAddToCart={handleAddToCart} />
       </>
     );
   }
   
-  // Main page with all sections and user info in header
+  // Main page with all sections and floating cart/user buttons (no header)
   return (
     <div>
-      {/* User Profile and Cart Navigation in Header */}
-      <div className="fixed top-0 right-0 m-4 z-50 flex items-center gap-3">
+      {/* Floating Cart and User Profile buttons (no header structure) */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
         {/* Cart Button */}
-        <CartButton cartItemCount={cartItemCount} onClick={goToCart} />
+        {showCartButton && <CartButton cartItemCount={cartItemCount} onClick={goToCart} />}
         
-        {/* User Profile */}
+        {/* User Profile Button */}
         {isLoggedIn && (
-          <>
-            <span className="text-white bg-gray-800 px-3 py-1 rounded-lg">
-              Welcome, {userData?.name || 'User'}
-            </span>
-            <button 
-              onClick={goToUserProfile}
-              className="bg-gray-800 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-700 transition-colors"
-            >
-              {/* User icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </button>
-          </>
+          <button 
+            onClick={goToUserProfile}
+            className="bg-gray-800 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-700 transition-colors"
+            aria-label="User profile"
+          >
+            {/* User icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
         )}
       </div>
       
       <div ref={homeRef}>
-        <Page1 onGalleryClick={goToGallery} onCartClick={goToCart} />
+        <Page1 onGalleryClick={goToGallery} />
       </div>
       <div ref={galleryRef}>
         <ArtGalleryPage onArtistsDirectoryClick={goToArtistsDirectory} />
