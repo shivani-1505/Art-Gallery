@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { MdArrowBack } from "react-icons/md";
-import { db } from "../firebase/firebaseConfig"; // Import Firestore configuration
+import { db } from "../firebase/firebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
-
+ 
 export default function Login({ onBackClick, onLoginSuccess, onSignupClick }) {
   const [formData, setFormData] = useState({
     email: "",
