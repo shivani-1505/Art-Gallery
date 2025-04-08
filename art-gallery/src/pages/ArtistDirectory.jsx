@@ -29,22 +29,21 @@ function ArtistDirectory({ onBackClick, onArtistSelect }) {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-black text-white px-6 pt-16 pb-12 overflow-hidden">
+    <div className="min-h-screen w-screen bg-black text-white px-4 sm:px-6 pt-4 sm:pt-16 pb-12 overflow-hidden">
       {/* Back button without header */}
-      <div className="max-w-6xl mx-auto mb-8">
+      <div className="max-w-6xl mx-auto mb-4 sm:mb-8">
         <button 
           onClick={onBackClick} 
-          className="text-white hover:text-gray-300 transition-colors flex items-center"
+          className="text-white hover:text-gray-300 transition-colors flex items-center -mt-2 sm:mt-0"
           aria-label="Go back to gallery"
         >
-          <MdArrowBack className="text-2xl" />
-          <span className="ml-2">Back</span>
+          <MdArrowBack className="text-lg sm:text-2xl" />
         </button>
       </div>
       
-      <div className="max-w-6xl mx-auto mb-12 px-4">
-        <h1 className="text-4xl font-bold text-center mb-8">Our Contributing Artists</h1>
-        <p className="text-gray-400 text-center max-w-2xl mx-auto">
+      <div className="max-w-6xl mx-auto mb-8 px-4">
+        <h1 className="text-3xl sm:text-4xl font-bold text-center mb-2 sm:mb-8">Our Contributing Artists</h1>
+        <p className="text-sm sm:text-base text-gray-400 text-center max-w-2xl mx-auto">
           Meet the talented artists who have contributed their unique vision and creativity to our gallery. 
           Click on any artist to learn more about their background, skills, and view their artwork collection.
         </p>
@@ -53,7 +52,7 @@ function ArtistDirectory({ onBackClick, onArtistSelect }) {
       {/* Artists Grid */}
       <div className="max-w-6xl mx-auto flex justify-center">
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center"
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 justify-items-center"
           initial="hidden"
           animate="visible"
           variants={{
@@ -69,7 +68,7 @@ function ArtistDirectory({ onBackClick, onArtistSelect }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <div className="h-64 overflow-hidden bg-gray-800">
+              <div className="h-40 sm:h-64 overflow-hidden bg-gray-800">
                 <img 
                   src={artist.imageUrl} 
                   alt={artist.name}
@@ -77,18 +76,18 @@ function ArtistDirectory({ onBackClick, onArtistSelect }) {
                 />
               </div>
               
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-white mb-1">{artist.name}</h2>
-                <p className="text-gray-300 mb-3">{artist.description}</p>
-                <p className="text-sm text-gray-400">Lifetime: {artist.lifetime}</p>
-                <div className="mt-4 flex justify-between items-center">
-                  <span className="text-sm text-gray-400">
+              <div className="p-3 sm:p-6">
+                <h2 className="text-base sm:text-xl font-bold text-white mb-1">{artist.name}</h2>
+                <p className="text-xs sm:text-base text-gray-300 mb-2 sm:mb-3 line-clamp-2">{artist.description}</p>
+                <p className="text-xs sm:text-sm text-gray-400">Lifetime: {artist.lifetime}</p>
+                <div className="mt-2 sm:mt-4 flex justify-between items-center">
+                  <span className="text-xs sm:text-sm text-gray-400">
                     {artist.famousArtworks && artist.famousArtworks.length} artwork
                     {artist.famousArtworks && artist.famousArtworks.length !== 1 ? "s" : ""}
                   </span>
-                  <span className="text-sm text-blue-400 hover:text-blue-300 group flex items-center">
+                  <span className="text-xs sm:text-sm text-blue-400 hover:text-blue-300 group flex items-center">
                     View Profile
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </span>
