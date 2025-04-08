@@ -1,0 +1,218 @@
+/* 🌟 Auction List Container */
+.auction-list-container {
+    width: 100vw; /* Explicitly set to full viewport width */
+    height: var(--auction-height, 100vh); /* Full height or half height */
+    background-color: #0a0a0a; /* Solid dark background */
+    color: #d3d3d3;
+    font-family: "Merriweather", serif;
+    position: relative; /* For absolute positioning of back button */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+    justify-content: center; /* Center content vertically */
+    padding: 20px 40px; /* Maintain padding */
+    box-sizing: border-box; /* Include padding in width/height calculations */
+  }
+  
+  /* 🏛️ Auction Header */
+  .auction-header {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    text-align: center; /* Center header text */
+    width: 100%; /* Ensure header uses full available width */
+  }
+  
+  .auction-header h1 {
+    font-size: 2.5rem; /* Increased for prominence */
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    color: #d4af37; /* Gold-like color */
+    text-shadow: 2px 2px 4px rgba(212, 175, 55, 0.3); /* Subtle glow effect */
+    letter-spacing: 2px; /* Enhanced spacing for elegance */
+  }
+  
+  .auction-header p {
+    display: none; /* Removed subtitle to match image */
+  }
+  
+  /* 🎨 Auction Artwork Grid */
+  .artworks-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px; /* Increased gap for better spacing */
+    justify-items: center; /* Center items in grid */
+    width: 100%; /* Ensure grid takes full available width */
+    padding: 0 10px; /* Add small padding to prevent edge clipping */
+  }
+  
+  /* 🖼️ Artwork Card */
+  .artwork-card {
+    background: #1c1c1c;
+    border-radius: 12px; /* Slightly larger radius for modern look */
+    overflow: hidden;
+    box-shadow: 0px 6px 15px rgba(212, 175, 55, 0.2); /* Enhanced shadow */
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    width: 100%;
+    max-width: 300px;
+    border: 3px solid #d4af37; /* Thicker gold border */
+  }
+  
+  .artwork-card:hover {
+    transform: translateY(-5px); /* Increased lift on hover */
+    box-shadow: 0px 8px 20px rgba(212, 175, 55, 0.4); /* Stronger shadow on hover */
+  }
+  
+  /* 🏆 Artwork Image */
+  .artwork-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+  }
+  
+  .artwork-card:hover .artwork-image {
+    opacity: 0.85; /* Slightly reduced opacity for hover effect */
+  }
+  
+  /* 📜 Artwork Details */
+  .artwork-details {
+    padding: 20px; /* Increased padding for better spacing */
+    text-align: center;
+    background: #1c1c1c;
+  }
+  
+  .artwork-title {
+    font-size: 1.3rem; /* Slightly larger for readability */
+    font-weight: 600;
+    color: #d4af37;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .artwork-description {
+    font-size: 0.95rem;
+    color: #a9a9a9;
+    margin-bottom: 12px;
+    line-height: 1.5;
+    font-family: "Georgia", serif;
+  }
+  
+  .starting-bid {
+    font-size: 0.95rem;
+    color: #a9a9a9;
+    font-weight: 400;
+  }
+  
+  /* 🔹 Join Auction Button */
+  .join-auction {
+    display: inline-block; /* Allows centering */
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: #d4af37; /* Gold-like color */
+    color: #0a0a0a;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 20px; /* Space from the grid */
+    text-align: center;
+  }
+  
+  .join-auction:hover {
+    background-color: #f0e68c; /* Lighter gold on hover */
+    transform: scale(1.05);
+  }
+  
+  /* 🔹 View Auction Button (Removed to match image) */
+  .view-auction {
+    display: none;
+  }
+  
+  /* 🔙 Back Button */
+  .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px; /* Top left corner */
+    font-size: 28px; /* Increased size for prominence */
+    color: #d4af37;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%; /* Circular button for appeal */
+    background-color: rgba(212, 175, 55, 0.1); /* Subtle gold background */
+  }
+  
+  .back-button:hover {
+    color: #f0e68c; /* Lighter gold on hover */
+    transform: scale(1.2); /* Scale up on hover */
+    background-color: rgba(212, 175, 55, 0.2); /* Slightly darker hover background */
+  }
+  
+  .back-button::before {
+    content: ""; /* Removed arrow */
+  }
+  
+  /* 🛒 Cart Button (Positioned at top right, will be hidden conditionally) */
+  .cart-button {
+    position: absolute;
+    top: 20px;
+    right: 20px; /* Top right corner */
+    background: #2a2a2a; /* Dark background to match theme */
+    color: #d4af37;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .cart-button:hover {
+    background-color: #333;
+    transform: scale(1.1);
+  }
+  
+  /* Toggle Height Class (Optional) */
+  .half-height {
+    --auction-height: 50vh; /* Half height option */
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .auction-header h1 {
+      font-size: 1.8rem;
+    }
+    .artworks-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .artwork-card {
+      max-width: 100%;
+    }
+    .back-button {
+      top: 15px;
+      left: 15px;
+      font-size: 24px;
+    }
+    .cart-button {
+      top: 15px;
+      right: 15px;
+      width: 35px;
+      height: 35px;
+    }
+    .join-auction {
+      padding: 10px 20px;
+      font-size: 0.9rem;
+    }
+  }
