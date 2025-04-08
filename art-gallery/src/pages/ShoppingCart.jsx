@@ -60,17 +60,17 @@ const ShoppingCart = ({ onBackClick }) => {
 
   return (
     <div className="min-h-screen w-screen bg-black text-white px-6 py-12 overflow-hidden">
-      {/* Back Button and Title */}
+      {/* Back Button and Title - UPDATED FOR MOBILE */}
       <div className="max-w-6xl mx-auto mb-8">
-        <div className="flex items-center mb-6 relative">
+        <div className="flex items-center justify-center mb-6 relative">
           <button 
             onClick={onBackClick} 
-            className="text-white hover:text-gray-300 transition-colors absolute left-0"
+            className="text-white hover:text-gray-300 transition-colors absolute left-0 top-1/2 transform -translate-y-1/2 p-2"
             aria-label="Go back"
           >
             <MdArrowBack className="text-2xl" />
           </button>
-          <h1 className="text-3xl font-bold text-center w-full">Your Shopping Cart</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-center px-10">Your Shopping Cart</h1>
         </div>
       </div>
       
