@@ -4,6 +4,7 @@ import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
+  base: './', // ✅ Ensures relative paths for Vercel
   plugins: [react()],
   css: {
     postcss: {
