@@ -30,22 +30,22 @@ const ArtistProfile = ({ artist, onBackClick }) => {
   }
 
   return (
-    <div className="bg-black min-h-screen w-screen text-white p-6">
+    <div className="bg-black min-h-screen w-screen text-white px-4 sm:p-6 pt-4 sm:pt-16 overflow-hidden">
       {/* Header with Back Button */}
       <div className="max-w-4xl mx-auto">
         <button
           onClick={onBackClick}
-          className="flex items-center text-white hover:text-gray-300 mb-4"
+          className="flex items-center text-white hover:text-gray-300 mb-4 -mt-2 sm:mt-0"
           aria-label="Go back"
         >
-          <MdArrowBack className="text-2xl mr-2" /> Back
+          <MdArrowBack className="text-lg sm:text-2xl" />
         </button>
         {/* Artist Profile Card */}
         <div className="bg-gray-900 rounded-xl overflow-hidden shadow-xl">
           <div className="flex flex-col md:flex-row">
             {/* Left Side – Artist Photo */}
-            <div className="md:w-1/3 p-8 flex items-center justify-center">
-              <div className="w-48 h-48 rounded-full overflow-hidden bg-gray-800 border-4 border-gray-700">
+            <div className="md:w-1/3 p-4 sm:p-8 flex items-center justify-center">
+              <div className="w-32 h-32 sm:w-48 sm:h-48 rounded-full overflow-hidden bg-gray-800 border-4 border-gray-700">
                 <img
                   src={artist.imageUrl}
                   alt={artist.name}
@@ -54,14 +54,14 @@ const ArtistProfile = ({ artist, onBackClick }) => {
               </div>
             </div>
             {/* Right Side – Artist Details */}
-            <div className="md:w-2/3 p-8">
-              <h2 className="text-4xl font-bold text-amber-400">{artist.name}</h2>
-              <p className="text-gray-400 mt-1">
+            <div className="md:w-2/3 p-4 sm:p-8">
+              <h2 className="text-2xl sm:text-4xl font-bold text-amber-400">{artist.name}</h2>
+              <p className="text-xs sm:text-base text-gray-400 mt-1">
                 <strong>Lifetime:</strong> {artist.lifetime}
               </p>
               <div className="mt-4">
-                <h3 className="text-2xl font-semibold">Biography</h3>
-                <p className="text-gray-300 mt-2 leading-relaxed">
+                <h3 className="text-xl sm:text-2xl font-semibold">Biography</h3>
+                <p className="text-xs sm:text-base text-gray-300 mt-2 leading-relaxed">
                   {artist.biography}
                 </p>
               </div>
@@ -70,10 +70,10 @@ const ArtistProfile = ({ artist, onBackClick }) => {
         </div>
 
         {/* Famous Artworks Section */}
-        <div className="mt-8">
-          <h3 className="text-2xl font-bold mb-4">Famous Artworks</h3>
+        <div className="mt-6 sm:mt-8">
+          <h3 className="text-xl sm:text-2xl font-bold mb-4">Famous Artworks</h3>
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
             initial="hidden"
             animate="visible"
             variants={{
@@ -102,23 +102,23 @@ const ArtistProfile = ({ artist, onBackClick }) => {
                 <img
                   src={artwork.imageUrl}
                   alt={artwork.title}
-                  className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-32 sm:h-48 object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="p-4">
-                  <p className="text-center text-gray-300">{artwork.title}</p>
+                <div className="p-2 sm:p-4">
+                  <p className="text-center text-xs sm:text-base text-gray-300">{artwork.title}</p>
                 </div>
                 
                 {/* Hover overlay - similar to the gallery view */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-2 sm:p-4">
                   <div className="flex justify-between items-end">
                     <div>
-                      <h3 className="text-lg font-semibold">{artwork.title}</h3>
-                      <p className="text-gray-300 text-sm">
+                      <h3 className="text-sm sm:text-lg font-semibold">{artwork.title}</h3>
+                      <p className="text-gray-300 text-xs sm:text-sm">
                         {artist.name}
                       </p>
                     </div>
                     {artwork.price && (
-                      <div className="bg-white text-black px-3 py-1 rounded-full shadow-md font-bold text-sm">
+                      <div className="bg-white text-black px-2 py-1 sm:px-3 sm:py-1 rounded-full shadow-md font-bold text-xs sm:text-sm">
                         {typeof artwork.price === 'number' ? `$${artwork.price}` : artwork.price}
                       </div>
                     )}

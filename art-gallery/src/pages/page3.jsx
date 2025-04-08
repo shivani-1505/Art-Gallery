@@ -30,76 +30,86 @@ export default function ArtSale({ onSeeMoreClick }) {
   const categories = Object.keys(imageData);
 
   return (
-    <div className="bg-black h-screen w-screen flex flex-col justify-start items-center text-white m-0 p-0 gap-6">
-      {/* Page Title */}
-      <div className="text-4xl font-semibold mt-16 self-start ml-10">
-        Artwork For Sale
-      </div>
-
-      {/* Horizontal Menu - Category Buttons */}
-      <div className="flex space-x-4 text-sm mt-6">
-        {categories.map((category) => (
-          <button
-          key={category}
-          onClick={() => setSelected(category)}
-          className={`relative pb-1 transition-all border-none outline-none focus:outline-none bg-transparent whitespace-nowrap ${
-            selected === category ? "text-white font-semibold" : "text-gray-500 hover:text-gray-300"
-          }`}
-        >
-            {category}
-            {selected === category && (
-              <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white"></span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Image Gallery */}
-      <motion.div
-        className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-6 overflow-hidden"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          visible: { transition: { staggerChildren: 0.2 } },
-        }}
-      >
-        <AnimatePresence mode="popLayout">
-          {!loading &&
-            imagesToShow.map((image, index) => (
-              <motion.div
-                key={image}
-                className="w-80 h-96 bg-gray-800 rounded-xl overflow-hidden shadow-2xl relative"
-                initial={{ opacity: 0, x: -100 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.2 }}
-              >
-                {/* Price Button */}
-                <button className="absolute bottom-20 left-10 bg-white text-black px-6 py-2 rounded-full shadow-md font-bold text-lg">
-                  $300
-                </button>
-
-                {/* Artwork Image */}
-                <img
-                  src={image}
-                  alt={`Artwork ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </motion.div>
-            ))}
-        </AnimatePresence>
-      </motion.div>
-
-      <div className="mt-10">
-  <button onClick={onSeeMoreClick} className="bg-transparent border-0 p-0 focus:outline-none">
-    <HoverBorderGradient 
-      containerClassName="rounded-3xl p-0.5"
-      className="text-xs font-semibold px-8 py-2 rounded-xl flex justify-center items-center gap-2 w-auto"
-    >
-      <span>See More</span>
-      <MdArrowForward className="text-white text-lg" />
-    </HoverBorderGradient>
-  </button>
+    <div className="bg-black h-screen w-screen flex flex-col overflow-hidden">
+      {/* Page container */}
+      <div className="flex flex-col h-full w-full">
+        {/* Page Title */}
+<div className="text-4xl font-semibold mt-16 self-start ml-4 sm:self-start sm:ml-20">
+  Artwork For Sale
 </div>
+
+      {/* Horizontally scrollable categories */}
+<div className="w-full overflow-x-auto no-scrollbar mb-4 self-start sm:flex sm:justify-center">
+  <div className="flex space-x-4 text-sm mt-6 px-4 pb-2 min-w-max inline-flex">
+    {categories.map((category) => (
+      <button
+        key={category}
+        onClick={() => setSelected(category)}
+        className={`relative pb-1 transition-all border-none outline-none focus:outline-none bg-transparent whitespace-nowrap ${
+          selected === category ? "text-white font-semibold" : "text-gray-500 hover:text-gray-300"
+        }`}
+      >
+        {category}
+        {selected === category && (
+          <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white"></span>
+        )}
+      </button>
+    ))}
+  </div>
+</div>
+
+{/* Horizontally scrollable images */}
+<div className="w-full overflow-x-auto no-scrollbar flex-grow self-start sm:flex sm:justify-center">
+  <motion.div
+    className="flex space-x-4 px-4 h-full inline-flex"
+    initial="hidden"
+    animate="visible"
+    variants={{
+      visible: { transition: { staggerChildren: 0.2 } },
+    }}
+  >
+    <AnimatePresence mode="popLayout">
+      {!loading &&
+        imagesToShow.map((image, index) => (
+          <motion.div
+            key={image}
+            className="flex-shrink-0 w-64 h-80 bg-gray-800 rounded-xl overflow-hidden shadow-2xl relative"
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.2 }}
+          >
+            {/* Price Button */}
+            <button className="absolute bottom-16 left-4 bg-white text-black px-6 py-2 rounded-full shadow-md font-bold text-lg">
+              $300
+            </button>
+
+            {/* Artwork Image */}
+            <img
+              src={image}
+              alt={`Artwork ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        ))}
+    </AnimatePresence>
+  </motion.div>
+</div>
+        {/* See More Button - Centered */}
+        <div className="flex justify-center items-center my-6">
+          <button 
+            onClick={onSeeMoreClick} 
+            className="bg-transparent border-0 p-0 focus:outline-none"
+          >
+            <HoverBorderGradient 
+              containerClassName="rounded-3xl p-0.5"
+              className="text-xs font-semibold px-8 py-2 rounded-xl flex justify-center items-center gap-2 w-auto"
+            >
+              <span>See More</span>
+              <MdArrowForward className="text-white text-lg" />
+            </HoverBorderGradient>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

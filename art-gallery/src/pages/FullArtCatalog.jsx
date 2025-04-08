@@ -183,29 +183,29 @@ export default function FullArtCatalog({ onBackClick, onArtistClick }) {
   return (
     <div className="bg-black min-h-screen w-screen overflow-x-hidden text-white m-0 p-0">
       {/* Fixed Header with Back Button and Categories */}
-      <div className="sticky top-10 z-10 bg-black bg-opacity-95 pt-10 pb-4 px-16">
-        <div className="flex items-center mb-6 relative">
-          {/* Back Button (positioned left) */}
-          <button 
-            onClick={onBackClick} 
-            className="text-white hover:text-gray-300 transition-colors absolute left-0"
-            aria-label="Go back to main page"
-          >
-            <MdArrowBack className="text-2xl" />
-          </button>
-          
-          {/* Page Title (centered) */}
-          <h1 className="text-3xl font-semibold text-center w-full">Artwork for Sale</h1>
-        </div>
+      <div className="sticky top-0 z-10 bg-black bg-opacity-95 pt-4 pb-4 px-4 sm:px-16 relative">
+        {/* Back Button (positioned top left) */}
+        <button 
+          onClick={onBackClick} 
+          className="text-white hover:text-gray-300 transition-colors absolute left-4 top-2 z-20"
+          aria-label="Go back to main page"
+        >
+          <MdArrowBack className="text-xl sm:text-2xl" />
+        </button>
+        
+        {/* Page Title (centered) */}
+        <h1 className="text-2xl sm:text-3xl font-semibold text-center w-full mt-12 mb-2">Artwork for Sale</h1>
 
         {/* Category Buttons */}
-        <div className="flex space-x-6 text-sm overflow-x-auto pb-2 justify-center w-full">
+        <div className="flex space-x-4 sm:space-x-6 text-xs sm:text-sm overflow-x-auto pb-2 justify-start sm:justify-center w-full px-4 sm:px-0">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelected(category)}
               className={`relative pb-1 transition-all border-none outline-none focus:outline-none bg-transparent whitespace-nowrap ${
-                selected === category ? "text-white font-semibold" : "text-gray-500 hover:text-gray-300"
+                selected === category 
+                  ? "text-white font-semibold" 
+                  : "text-gray-500 hover:text-white"
               }`}
             >
               {category}
@@ -218,9 +218,9 @@ export default function FullArtCatalog({ onBackClick, onArtistClick }) {
       </div>
 
       {/* Main Content - Full Screen Grid */}
-      <div className="px-16 py-8">
+      <div className="px-4 sm:px-16 py-4">
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
           initial="hidden"
           animate="visible"
           variants={{
@@ -246,20 +246,20 @@ export default function FullArtCatalog({ onBackClick, onArtistClick }) {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
 
-                  {/* Overlay with Price */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                  {/* Overlay with Price - Always Visible */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 sm:p-6">
                     <div className="flex justify-between items-end">
                       <div>
-                        <h3 className="text-xl font-semibold">{getArtworkTitle(image, index)}</h3>
+                        <h3 className="text-sm sm:text-xl font-semibold">{getArtworkTitle(image, index)}</h3>
                         {/* Make artist name clickable */}
                         <p 
-                          className="text-gray-300 text-sm cursor-pointer hover:text-white hover:underline"
+                          className="text-gray-300 text-xs sm:text-sm cursor-pointer hover:text-white hover:underline"
                           onClick={(e) => handleArtistClick(getArtistName(image), e)}
                         >
                           {getArtistName(image)}
                         </p>
                       </div>
-                      <div className="bg-white text-black px-4 py-2 rounded-full shadow-md font-bold">
+                      <div className="bg-white text-black px-2 py-1 sm:px-4 sm:py-2 rounded-full shadow-md font-bold text-xs sm:text-base">
                         {getArtworkPrice(image)}
                       </div>
                     </div>

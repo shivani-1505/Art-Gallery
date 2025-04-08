@@ -17,7 +17,7 @@ const VirtualTour = () => {
 
 const styles = {
   container: {
-    backgroundColor: "black",
+    backgroundColor: "#0e0f12",
     color: "white",
     textAlign: "center",
     minHeight: "100vh",
