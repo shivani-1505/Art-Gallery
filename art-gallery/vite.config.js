@@ -10,7 +10,10 @@ export default defineConfig({
       plugins: [tailwindcss(), autoprefixer()],
     },
   },
+  build: {
+    target: 'esnext', // ✅ Fixes the Vercel build target for top-level await
+  },
   esbuild: {
-    target: 'esnext', // 🔥 This is the key change
+    target: 'esnext',
   },
 });
