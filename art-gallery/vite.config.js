@@ -8,10 +8,21 @@ export default defineConfig({
   plugins: [
     react(),
   ],
+  base: './', // Add this line to use relative paths for assets
+  build: {
+    target: 'esnext',
+    outDir: 'build',
+  },
   css: {
     postcss: {
       plugins: [
-        tailwindcss(),
+        tailwindcss({
+          // Add content paths to properly purge unused styles
+          content: [
+            './index.html',
+            './src/**/*.{js,jsx,ts,tsx}'
+          ],
+        }),
         autoprefixer(),
       ],
     },

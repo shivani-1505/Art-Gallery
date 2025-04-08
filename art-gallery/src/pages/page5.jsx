@@ -1,6 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
+import { collection, getDocs, addDoc, doc, deleteDoc, updateDoc } from "firebase/firestore";
+
+// Directly import the db instance instead of depending on a separate module
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+
+// Your Firebase configuration - replace with your actual config
+const firebaseConfig = {
+  apiKey: "your-api-key",
+  authDomain: "your-auth-domain",
+  projectId: "your-project-id",
+  storageBucket: "your-storage-bucket",
+  messagingSenderId: "your-messaging-sender-id",
+  appId: "your-app-id",
+  measurementId: "your-measurement-id"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const FAQWebpage = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -25,12 +43,53 @@ const FAQWebpage = () => {
           id: doc.id,
           ...doc.data()
         }));
-        setFaqData(faqList);
+        
+        // If no FAQs are found, use fallback data
+        if (faqList.length === 0) {
+          setFaqData([
+            {
+              id: "fallback1",
+              question: "What types of art do you showcase?",
+              answer: "We showcase a diverse range of art including paintings, sculptures, digital art, and photography from both established and emerging artists."
+            },
+            {
+              id: "fallback2",
+              question: "How can I purchase artwork?",
+              answer: "You can purchase artwork directly through our website by adding items to your cart and proceeding to checkout. We accept major credit cards and PayPal."
+            },
+            {
+              id: "fallback3",
+              question: "Do you ship internationally?",
+              answer: "Yes, we ship to most countries worldwide. International shipping rates vary depending on the size and weight of the artwork and the destination country."
+            }
+          ]);
+        } else {
+          setFaqData(faqList);
+        }
+        
         setIsLoading(false);
       } catch (err) {
-        setError("Failed to load FAQs. Please try again later.");
-        setIsLoading(false);
         console.error("Error fetching FAQs:", err);
+        // Use fallback data if there's an error
+        setFaqData([
+          {
+            id: "fallback1",
+            question: "What types of art do you showcase?",
+            answer: "We showcase a diverse range of art including paintings, sculptures, digital art, and photography from both established and emerging artists."
+          },
+          {
+            id: "fallback2",
+            question: "How can I purchase artwork?",
+            answer: "You can purchase artwork directly through our website by adding items to your cart and proceeding to checkout. We accept major credit cards and PayPal."
+          },
+          {
+            id: "fallback3",
+            question: "Do you ship internationally?",
+            answer: "Yes, we ship to most countries worldwide. International shipping rates vary depending on the size and weight of the artwork and the destination country."
+          }
+        ]);
+        setError("Failed to load FAQs from database. Showing sample questions instead.");
+        setIsLoading(false);
       }
     };
 
@@ -115,18 +174,44 @@ const FAQWebpage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-black">
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: 'white',
+      color: 'black'
+    }}>
       {/* Header */}
-      <header className="py-12 px-6 text-center">
-        <span className="uppercase text-sm font-medium tracking-wide">
+      <header style={{
+        padding: '3rem 1.5rem',
+        textAlign: 'center'
+      }}>
+        <span style={{
+          textTransform: 'uppercase',
+          fontSize: '0.875rem',
+          fontWeight: '500',
+          letterSpacing: '0.05em'
+        }}>
           FAQ's
         </span>
-        <h1 className="text-4xl font-bold mt-2">Frequently Asked Questions</h1>
+        <h1 style={{
+          fontSize: '2.25rem',
+          fontWeight: 'bold',
+          marginTop: '0.5rem'
+        }}>Frequently Asked Questions</h1>
         
         {/* Admin toggle button (you would normally hide this behind auth) */}
         <button 
           onClick={toggleAdminPanel}
-          className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition"
+          style={{
+            marginTop: '1rem',
+            padding: '0.5rem 1rem',
+            backgroundColor: '#e5e7eb',
+            color: '#4b5563',
+            borderRadius: '0.375rem',
+            border: 'none',
+            cursor: 'pointer'
+          }}
         >
           {isAdmin ? "Hide Admin Panel" : "Admin Panel"}
         </button>
@@ -134,10 +219,24 @@ const FAQWebpage = () => {
 
       {/* Error message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-6 md:mx-20">
+        <div style={{
+          backgroundColor: '#fee2e2',
+          border: '1px solid #f87171',
+          color: '#b91c1c',
+          padding: '0.75rem 1rem',
+          borderRadius: '0.375rem',
+          margin: '0 1.5rem 1.5rem',
+          position: 'relative'
+        }}>
           {error}
           <button 
-            className="float-right font-bold"
+            style={{
+              float: 'right',
+              fontWeight: 'bold',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer'
+            }}
             onClick={() => setError(null)}
           >
             &times;
@@ -147,34 +246,69 @@ const FAQWebpage = () => {
 
       {/* Admin Panel */}
       {isAdmin && (
-        <div className="px-6 md:px-20 mb-8 bg-gray-100 py-6 rounded-lg">
-          <h2 className="text-xl font-bold mb-4">
+        <div style={{
+          padding: '1.5rem',
+          margin: '0 1.5rem 2rem',
+          backgroundColor: '#f3f4f6',
+          borderRadius: '0.5rem'
+        }}>
+          <h2 style={{
+            fontSize: '1.25rem',
+            fontWeight: 'bold',
+            marginBottom: '1rem'
+          }}>
             {editingId ? "Edit FAQ" : "Add New FAQ"}
           </h2>
           <form onSubmit={editingId ? updateFAQ : addFAQ}>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Question:</label>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{
+                display: 'block',
+                color: '#4b5563',
+                marginBottom: '0.5rem'
+              }}>Question:</label>
               <input
                 type="text"
                 value={newQuestion}
                 onChange={(e) => setNewQuestion(e.target.value)}
-                className="w-full p-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '0.25rem'
+                }}
                 required
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Answer:</label>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{
+                display: 'block',
+                color: '#4b5563',
+                marginBottom: '0.5rem'
+              }}>Answer:</label>
               <textarea
                 value={newAnswer}
                 onChange={(e) => setNewAnswer(e.target.value)}
-                className="w-full p-2 border rounded h-24 focus:outline-none focus:ring focus:border-blue-300"
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '0.25rem',
+                  height: '6rem'
+                }}
                 required
               />
             </div>
-            <div className="flex space-x-2">
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button
                 type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                style={{
+                  backgroundColor: '#3b82f6',
+                  color: 'white',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '0.25rem',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
               >
                 {editingId ? "Update FAQ" : "Add FAQ"}
               </button>
@@ -186,7 +320,14 @@ const FAQWebpage = () => {
                     setNewQuestion("");
                     setNewAnswer("");
                   }}
-                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+                  style={{
+                    backgroundColor: '#6b7280',
+                    color: 'white',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '0.25rem',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
                 >
                   Cancel
                 </button>
@@ -197,33 +338,50 @@ const FAQWebpage = () => {
       )}
 
       {/* FAQ Section */}
-      <main className="px-6 md:px-20 flex-grow">
+      <main style={{
+        padding: '0 1.5rem',
+        flexGrow: 1
+      }}>
         {isLoading ? (
-          <div className="text-center py-10">
+          <div style={{ textAlign: 'center', padding: '2.5rem 0' }}>
             <p>Loading FAQs...</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {faqData.length === 0 ? (
-              <p className="text-center text-gray-500 py-10">No FAQs available.</p>
+              <p style={{ textAlign: 'center', color: '#6b7280', padding: '2.5rem 0' }}>No FAQs available.</p>
             ) : (
               faqData.map((item, index) => (
                 <div
                   key={item.id || index}
-                  className={`border-b pb-4 ${
-                    activeIndex === index ? "text-gray-800" : "text-gray-500"
-                  }`}
+                  style={{
+                    borderBottom: '1px solid #e5e7eb',
+                    paddingBottom: '1rem',
+                    color: activeIndex === index ? '#1f2937' : '#6b7280'
+                  }}
                 >
-                  <div className="flex justify-between">
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <button
-                      className="flex justify-between w-full text-lg font-medium focus:outline-none text-left"
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        fontSize: '1.125rem',
+                        fontWeight: '500',
+                        textAlign: 'left',
+                        background: 'none',
+                        border: 'none',
+                        padding: '0.5rem 0',
+                        cursor: 'pointer'
+                      }}
                       onClick={() => toggle(index)}
                     >
-                      {item.question}
+                      <span>{item.question}</span>
                       <span
-                        className={`transform ${
-                          activeIndex === index ? "rotate-90" : ""
-                        } transition-transform`}
+                        style={{
+                          transform: activeIndex === index ? 'rotate(90deg)' : 'rotate(0)',
+                          transition: 'transform 0.3s ease'
+                        }}
                       >
                         {activeIndex === index ? "−" : "+"}
                       </span>
@@ -231,16 +389,26 @@ const FAQWebpage = () => {
                     
                     {/* Admin actions */}
                     {isAdmin && (
-                      <div className="flex space-x-2 ml-4">
+                      <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
                         <button
                           onClick={() => startEditing(item)}
-                          className="text-blue-500 hover:text-blue-700"
+                          style={{
+                            color: '#3b82f6',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => deleteFAQ(item.id)}
-                          className="text-red-500 hover:text-red-700"
+                          style={{
+                            color: '#ef4444',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
                         >
                           Delete
                         </button>
@@ -249,8 +417,8 @@ const FAQWebpage = () => {
                   </div>
                   
                   {activeIndex === index && (
-                    <div>
-                      <p className="mt-2 text-sm">{item.answer}</p>
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <p style={{ fontSize: '0.875rem' }}>{item.answer}</p>
                     </div>
                   )}
                 </div>
@@ -261,18 +429,26 @@ const FAQWebpage = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-8 px-6 md:px-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <footer style={{
+        backgroundColor: 'black',
+        color: 'white',
+        padding: '2rem 1.5rem'
+      }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '2rem'
+        }}>
           {/* Column 1 */}
           <div>
-            <h3 className="font-semibold text-lg">Artversnght</h3>
-            <p className="mt-2">Art project, Gallery, Publishing</p>
+            <h3 style={{ fontWeight: '600', fontSize: '1.125rem' }}>Artversnght</h3>
+            <p style={{ marginTop: '0.5rem' }}>Art project, Gallery, Publishing</p>
             <p>3891 Ranchview Dr. Richardson, California 62339</p>
           </div>
           {/* Column 2 */}
           <div>
-            <h4 className="font-semibold">About Us</h4>
-            <ul className="mt-2 space-y-1 text-sm">
+            <h4 style={{ fontWeight: '600' }}>About Us</h4>
+            <ul style={{ marginTop: '0.5rem', lineHeight: '1.6' }}>
               <li>Careers</li>
               <li>Services</li>
               <li>Project</li>
