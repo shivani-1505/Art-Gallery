@@ -29,15 +29,13 @@ function ArtistDirectory({ onBackClick, onArtistSelect }) {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-black text-white px-4 sm:px-6 pt-4 sm:pt-16 pb-12 overflow-hidden">
-      {/* Back button without header */}
-      <div className="max-w-6xl mx-auto mb-4 sm:mb-8">
-        <button 
+<div className="min-h-screen w-screen bg-black text-white px-4 sm:px-6 pt-4 sm:pt-16 pb-12 overflow-hidden">      {/* Back button without header */}
+<div className="max-w-6xl mx-auto mb-4 sm:mb-8">        <button 
           onClick={onBackClick} 
-          className="text-white hover:text-gray-300 transition-colors flex items-center -mt-2 sm:mt-0"
+            className="text-white hover:text-gray-300 transition-colors flex items-center -mt-2 sm:mt-0"  
           aria-label="Go back to gallery"
         >
-          <MdArrowBack className="text-lg sm:text-2xl" />
+             <MdArrowBack className="text-lg sm:text-2xl" />
         </button>
       </div>
       
@@ -52,7 +50,7 @@ function ArtistDirectory({ onBackClick, onArtistSelect }) {
       {/* Artists Grid */}
       <div className="max-w-6xl mx-auto flex justify-center">
         <motion.div 
-          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 justify-items-center"
+            className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 justify-items-center"
           initial="hidden"
           animate="visible"
           variants={{
@@ -68,14 +66,12 @@ function ArtistDirectory({ onBackClick, onArtistSelect }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <div className="h-40 sm:h-64 overflow-hidden bg-gray-800">
-                <img 
+              <div className="h-40 sm:h-64 overflow-hidden bg-gray-800">                <img 
                   src={artist.imageUrl} 
                   alt={artist.name}
                   className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
                 />
               </div>
-              
               <div className="p-3 sm:p-6">
                 <h2 className="text-base sm:text-xl font-bold text-white mb-1">{artist.name}</h2>
                 <p className="text-xs sm:text-base text-gray-300 mb-2 sm:mb-3 line-clamp-2">{artist.description}</p>
@@ -87,8 +83,7 @@ function ArtistDirectory({ onBackClick, onArtistSelect }) {
                   </span>
                   <span className="text-xs sm:text-sm text-blue-400 hover:text-blue-300 group flex items-center">
                     View Profile
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </span>
                 </div>
